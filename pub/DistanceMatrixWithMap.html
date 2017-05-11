@@ -42,7 +42,6 @@
     margin: 0 0 5px;
     color: #777;
   }
-
 </style>
 
 <body>
@@ -59,6 +58,15 @@
     //Center map somewhere in the middle of the US, zoom level 4
     var map = L.map('map')
     map.on('layeradd', onMapLoad);
+    map.scrollWheelZoom.disable();
+    map.on('click', function () {
+      if (map.scrollWheelZoom.enabled()) {
+        map.scrollWheelZoom.disable();
+      }
+      else {
+        map.scrollWheelZoom.enable();
+      }
+    });
     map.setView([39.91, -96.68], 4);
 
     function onMapLoad() {
