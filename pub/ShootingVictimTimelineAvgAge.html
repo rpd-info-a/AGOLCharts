@@ -1,0 +1,68 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.4.0/regression.min.js"></script>
+</head>
+<body>
+
+<div class="row">
+  <div style="width: 600px; height: 400px" id="chart"></div>
+
+</div>
+
+<script>
+  var chart = new Cedar({"type":"time-trendline"});
+
+  var dataset = {
+    "url":"https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/arcgis/rest/services/Rochester_Shooting_Victims/FeatureServer/0/",
+    "query" : {
+      "where" : "Occurred_Year > 2000",
+      "groupByFieldsForStatistics": "Occurred_Year",
+      "outStatistics":[{
+        "statisticType": "count",
+        "onStatisticField": "ObjectID",
+        "outStatisticFieldName": "Count_of_Shootings"
+      },
+{
+        "statisticType": "avg",
+        "onStatisticField": "Victim_Age",
+        "outStatisticFieldName": "Average_Victim_Age"
+      }]
+    },
+    "mappings":{
+      "time": {"field":"Occurred_Year", "label": "Year"},
+      "value": {"field":"Count_of_Shootings", "label": "Count of Shootings"},
+      "trendline": {"field": "Average_Victim_Age", "label": "Average Victim Age"},
+      "sort": "Occurred_Year"
+    }
+  };
+// chart.tooltip = {
+//   "title": "{Occurred_Year}",
+//   "content": "{Count_of_Shootings} victims"
+// };
+  console.log(chart.dataset);
+  chart.dataset = dataset;
+  chart.show({
+    elementId: "#chart"
+  }); 
+
+  chart.override = {
+    scales: [
+      {
+        "name": "x",
+        "type": "ordinal",
+        "range": "width",
+        "nice": "year",
+        "zero": false
+      },
+      {
+        "zero" : false,
+        "nice" : true
+      }
+    ]
+  };
+</script>
+</body>
+</html>

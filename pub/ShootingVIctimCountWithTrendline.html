@@ -1,0 +1,168 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.4.0/regression.min.js"></script>
+</head>
+
+<body>
+
+  <div class="row">
+    <div style="width: 700px; height: 400px" id="chart"></div>
+
+  </div>
+
+  <script>
+    var chart = new Cedar({ "type": "time-trendline" });
+
+    var dataset = {
+      "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/arcgis/rest/services/Rochester_Shooting_Victims/FeatureServer/0/",
+      "query": {
+        "where": "Occurred_Year > 2000",
+        "groupByFieldsForStatistics": "Occurred_Year",
+        "outStatistics": [{
+          "statisticType": "count",
+          "onStatisticField": "ObjectID",
+          "outStatisticFieldName": "Count_of_Shootings"
+        },
+        {
+          "statisticType": "count",
+          "onStatisticField": "ObjectID",
+          "outStatisticFieldName": "Trendline"
+        }]
+      },
+      "mappings": {
+        "time": { "field": "Occurred_Year", "label": "Year" },
+        "value": { "field": "Count_of_Shootings", "label": "Count of Shootings" },
+        "trendline": { "field": "Trendline", "label": "" },
+        "sort": "Occurred_Year"
+      }
+    };
+    chart.tooltip = {
+      "title": "{Occurred_Year}",
+      "content": "{Count_of_Shootings} shootings"
+    };
+
+    chart.dataset = dataset;
+
+    chart.transform = function (queryResult, dataset) {
+      var features = queryResult.features;
+      var regFeatures = [];
+      var newFeatures = [];
+      var outStatsField = dataset.query.outStatistics[1].outStatisticFieldName;
+      var groupByField = dataset.query.groupByFieldsForStatistics;
+
+      for (var i = 0, len = features.length; i < len; i++) {
+        if (i < features.length - 1) {
+          regFeatures.push(features[i]);
+        }
+      }
+
+      var regressionData = regFeatures.map(function (obj) {
+        var rObj = [];
+        rObj = [obj.attributes[groupByField], obj.attributes[outStatsField]];
+        return rObj;
+      });
+
+      var result = regression('linear', regressionData);
+      var slope = result.equation[0];
+      var yIntercept = result.equation[1];
+      var equationString = result.string;
+      var r2 = result.r2;
+
+      for (var i = 0, len = features.length; i < len; i++) {
+        if (i < features.length) {
+          // if this isn't the current year then correct trendline
+          features[i].attributes[outStatsField] = features[i].attributes[groupByField] * slope + yIntercept;
+          newFeatures.push(features[i]);
+        } else {
+          newFeatures.push(newFeatures[i]);
+        }
+      }
+
+      console.log(newFeatures.length, slope, yIntercept, equationString, r2);
+
+      queryResult.features = newFeatures;
+      return queryResult;
+    };
+
+    chart.tooltip = {
+      "title": "{Occurred_Year}",
+      "content": "{Count_of_Shootings} victims"
+    };
+
+    chart.show({
+      elementId: "#chart",
+      autolabels: true
+    });
+
+    chart.override = {
+      axes: [
+        {
+          "type": "x",
+          "scale": "x"
+        },
+        {
+          "type": "y",
+          "scale": "y",
+          "grid": true,
+          "format": "0d",
+          "title":"Number of Shootings"
+        }
+      ],
+
+      scales: [
+        {
+          "name": "x",
+          "type": "ordinal",
+          "range": "width",
+          "nice": "year",
+          "zero": false
+        },
+        {
+          "zero": false
+        }
+      ],
+      "marks": [
+        {
+          "type": "symbol",
+          "from": { "data": "table" },
+          "properties": {
+            "enter": {
+              "stroke": { "value": "#0079c1" },
+              "fill": { "value": "#0079c1" },
+              "size": { "value": 40 },
+              "fillOpacity": {
+                "value": 0.8
+              },
+              "hover": {
+                "fill": { "value": "#0079c1" },
+                "size": { "value": 25 }
+              },
+              "update": {
+                "fill": { "value": "#f00" }
+              }
+            }
+          }
+        },
+        {
+          "type": "line",
+          "from": { "data": "table" },
+          "properties": {
+            "enter": {
+
+              "stroke": { "value": "#000000" },
+              "strokeWidth": { "value": 3 },
+              "strokeDash": { "value": [7, 2] }
+            }
+          }
+        }
+
+      ]
+    };
+  </script>
+</body>
+
+</html>

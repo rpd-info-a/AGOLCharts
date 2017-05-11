@@ -1,0 +1,84 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.4.0/regression.min.js"></script>
+</head>
+
+<body>
+  <a href="#" onclick="resetChart(); return false">Reset Chart</a>&nbsp;<span id="filter"></span>
+  <div class="row">
+    <div style="width: 700px; height: 500px" id="chart"></div>
+
+  </div>
+
+  <script>
+    var chart = new Cedar({
+      "type": "bar"
+    });
+    function buildDataset(group, count) {
+      return {
+        "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/arcgis/rest/services/Rochester_Shooting_Victims/FeatureServer/0/",
+        "query": {
+          "groupByFieldsForStatistics": group,
+          "outStatistics": [{
+            "statisticType": "count",
+            "onStatisticField": count,
+            "outStatisticFieldName": count + "_SUM"
+          }]
+        },
+        "mappings": {
+          "x": { "field": group, "label": group },
+          "y": { "field": count + "_SUM", "label": "# of Victims" },
+          "sort": count + "_SUM DESC"
+        }
+      };
+    }
+    function buildTooltip(group, count) {
+      return {
+        "id": "tooltip1",
+        "title": "{" + group + "}",
+        "content": "{" + count + "_SUM} Victims"
+      };
+
+    }
+    chart.tooltip = buildTooltip('Occurred_Year', 'ObjectID');
+    chart.dataset = buildDataset('Occurred_Year', 'ObjectID');
+
+
+    function facetChart(event, data) {
+      var selected = data[chart.dataset.mappings.x.field];
+      if (chart.dataset.mappings.x.field == "Occurred_Year") {
+        var where = chart.dataset.mappings.x.field + " = " + selected;
+        chart.dataset = buildDataset('Crime_Type', 'ObjectID');
+        chart.tooltip = buildTooltip('Crime_Type', 'ObjectID');
+      } else {
+        var where = chart.dataset.mappings.x.field + " = '" + selected + "'";
+        chart.dataset = buildDataset('Occurred_Year', 'ObjectID');
+        chart.tooltip = buildTooltip('Occurred_Year', 'ObjectID');
+      }
+      chart.dataset.query.where = where
+      document.getElementById('filter').innerHTML = where;
+      chart.update()
+    }
+
+    function resetChart() {
+      document.getElementById('filter').innerHTML = "no filter";
+      chart.dataset = buildDataset('Occurred_Year', 'ObjectID');
+      chart.tooltip = buildTooltip('Occurred_Year', 'ObjectID');
+      chart.dataset.query.where = "1=1"
+      chart.update()
+    }
+
+    chart.show({
+      elementId: "#chart",
+      autolabels: true
+    });
+    chart.on('click', facetChart);
+
+  </script>
+</body>
+
+</html>

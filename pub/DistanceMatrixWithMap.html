@@ -1,0 +1,323 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/calcite-bootstrap@0.3.4/dist/css/calcite-bootstrap.css">
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.5/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+  <script src="https://unpkg.com/leaflet@1.0.3"></script>
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet@2.0.8"></script>
+</head>
+
+<style>
+  #map {
+    height: 400px;
+  }
+
+  #chart {
+    height: 350px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+  }
+
+  #chart canvas {
+    margin: auto;
+    display: block;
+  }
+
+  .info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    width: 220px
+  }
+
+  .info h4 {
+    margin: 0 0 5px;
+    color: #777;
+  }
+
+</style>
+
+<body>
+  <div>
+    <span id="filter"></span>&nbsp;(<a href="#" onclick="resetChart(); return false">Reset</a>)
+    <div id="chart"></div>
+    <div id="map"></div>
+  </div>
+
+  <script>
+    //start map code
+    /////////////////////////////////////
+
+    //Center map somewhere in the middle of the US, zoom level 4
+    var map = L.map('map')
+    map.on('layeradd', onMapLoad);
+    map.setView([39.91, -96.68], 4);
+
+    function onMapLoad() {
+      // map load code
+    };
+
+    var info = L.control();
+
+    info.onAdd = function (map) {
+      this._div = L.DomUtil.create('div', 'info');
+      this.update();
+      return this._div;
+    };
+
+    info.update = function (props) {
+      this._div.innerHTML = '<h4>Find Similar City To:</h4>' + (props ?
+        '<b>' + props.city_display + '</b><br />'
+        : 'Hover over a city');
+    };
+
+    info.addTo(map);
+
+    var defaultStyle = {
+      radius: 8,
+      fillColor: "#0079c1",
+      color: "#000",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    };
+    //currently unused
+    var highlightStyle = {
+      radius: 10,
+      fillColor: "#C2185B",
+      color: "#000",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    };
+    var hoverStyle = {
+      radius: 10,
+      fillColor: "#c15a00",
+      color: "#000",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    };
+
+    function highlightFeature(e) {
+      //console.log(e);
+      var layer = e.target;
+      layer.setStyle(hoverStyle);
+
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+      }
+      //highlight chart
+      var val = e.target.feature.properties.city_display;
+      chart.select({ key: "city_display", value: val });
+      //clear info
+      info.update(layer.feature.properties);
+    }
+
+    function resetHighlight(e) {
+      var layer = e.target;
+      layer.setStyle(defaultStyle);
+
+      //reset chart
+      var val = e.target.feature.properties.city_display;
+      chart.clearSelection({ key: "city_display", value: val });
+      //update info
+      info.update();
+    }
+
+    function onEachFeature(feature, layer) {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: changeFocusMap
+      });
+    }
+
+    L.esri.basemapLayer('Streets').addTo(map);
+    var featureLayer = L.esri.featureLayer({
+      url: 'https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/ArcGIS/rest/services/CityCensusDistanceMatrix/FeatureServer/0',
+      pointToLayer: function (geojson, latlng) {
+        var circle = L.circleMarker(latlng, defaultStyle);
+        return circle;
+      },
+      onEachFeature: onEachFeature,
+    });
+    featureLayer.addTo(map);
+
+    function changeFocusMap(e) {
+      updateChart(e.target.feature.properties[dataset.mappings.id.field]);
+      document.getElementById('filter').innerHTML = "Currently Selected:" + e.target.feature.properties[dataset.mappings.city.field];
+    };
+
+    //chart code
+    //////////////////////////////////
+
+    var chart = new Cedar({ "type": "bar" });
+    var style = {
+      "marks": [{
+        "properties": {
+          "hover": { "fill": { "value": "#c15000" } },
+          "update": { "fill": { "value": "#0079c1" } }
+        }
+      }]
+    };
+
+    chart.override = style;
+
+    //create the dataset w/ mappings
+    var dataset = {
+      "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/ArcGIS/rest/services/CityCensusDistanceMatrix/FeatureServer/0",
+      "query": {
+        "where": "1=1",
+        "resultRecordCount": "16",
+        "orderByFields": "city104"
+      },
+      "mappings": {
+        "x": { "field": "city_display", "label": "City" },
+        "y": { "field": "city104", "label": "" },
+        "city": { "field": "city_display", "label": "city_display" },
+        "id": { "field": "id", "label": "id" },
+        "objectid": { "field": "OBJECTID", "label": "objectid" },
+        "lat": { "field": "lat", "label": "lat" },
+        "long": { "field": "long_", "label": "long" },
+      }
+    };
+
+    var cityArr;
+    function onChartLoad(err, data) {
+
+      //to do - symbolize similar cities 
+      if (err) { console.log(err); };
+      if (data) {
+        var cities = data.data["0"].values.features.map(function (obj) {
+          var robj = (obj.attributes.OBJECTID)
+          return robj;
+        });
+        cityArr = cities;
+        cities.forEach(function (d) {
+          featureLayer.setStyle(function (point) {
+            if (point.properties[dataset.mappings.x.field] === d) {
+              return highlightStyle;
+            } else {
+              //return defaultStyle;
+            }
+          });
+        }, this);
+        document.getElementById('filter').innerHTML = "Currently Selected: " + data.data["0"].values.features["0"].attributes.city_display;
+      };
+    };
+    //assign to the chart
+    chart.dataset = dataset;
+
+    // chart.transform = function (queryResult, dataset) {
+    //   var features = queryResult.features;
+    //   var newFeatures = [];
+
+    //   for (var i = 0, len = features.length; i < len; i++) {
+    //     if (i = 0) {
+    //       // if this isn't the current year then correct trendline
+    //       //newFeatures.push(features[i]);
+    //     } else {
+    //       console.log(features[i])
+    //       newFeatures.push(features[i]);
+    //     }
+    //   }
+    //   queryResult.features = newFeatures;
+    //   return queryResult;
+    // };
+
+    //show the chart
+    chart.show({
+      elementId: "#chart",
+      renderer: "svg"
+    }, onChartLoad);
+
+    function changeFocusChart(e, d) {
+      if (d === undefined || d === null) {
+        return
+      } else {
+        updateChart(d[dataset.mappings.id.field]);
+        document.getElementById('filter').innerHTML = "Currently Selected: " + d[dataset.mappings.city.field];
+      }
+    };
+
+    function updateChart(id) {
+      chart.dataset.query = {
+        "where": "1=1",
+        "resultRecordCount": "15",
+        "orderByFields": id
+      };
+
+      chart.dataset.mappings = {
+        "x": { "field": "city_display", "label": "City" },
+        "y": { "field": id, "label": "" },
+        "city": { "field": "city_display", "label": "city_display" },
+        "id": { "field": "id", "label": "id" },
+        "objectid": { "field": "OBJECTID", "label": "objectid" },
+        "lat": { "field": "lat", "label": "lat" },
+        "long": { "field": "long_", "label": "long" },
+      }
+      chart.update();
+    };
+
+    function resetChart() {
+      chart.clearSelection();
+      info.update();
+      document.getElementById('filter').innerHTML = "Currently Selected: Rochester, New York";
+      updateChart("city104");
+      map.setView([39.91, -96.68], 4);
+    }
+
+    //chart events
+    chart.on('mouseover', onChartHover);
+    chart.on('click', changeFocusChart);
+    chart.on('update-end', onChartUpdate);
+
+    function onChartUpdate(e, d) {
+      if (d === undefined || d === null) {
+        chart.clearSelection();
+        info.update();
+        return;
+      };
+    };
+
+    function onChartHover(e, d) {
+      if (d === undefined || d === null) {
+        chart.clearSelection();
+        info.update();
+        return;
+      };
+
+      //get selected value for attribute in chart marker
+      var selected = d[dataset.mappings.objectid.field];
+
+      featureLayer.eachFeature(function (layer) {
+        if (layer.feature.properties.OBJECTID === selected) {
+          info.update(layer.feature.properties);
+          map.setView([d[dataset.mappings.lat.field], d[dataset.mappings.long.field]], 5);
+          return featureLayer.setFeatureStyle(layer.feature.properties.OBJECTID, hoverStyle),
+            featureLayer.getFeature(layer.feature.properties.OBJECTID).bringToFront();
+
+        } else {
+          for (var i = 0, len = cityArr.length; i < len; i++) {
+            if (layer.feature.properties.city_display === cityArr[i]) {
+              return featureLayer.setFeatureStyle(layer.feature.properties.OBJECTID, highlightStyle);
+            } else {
+              return featureLayer.setFeatureStyle(layer.feature.properties.OBJECTID, defaultStyle);
+            }
+          };
+        }
+      });
+    };
+  </script>
+</body>
+
+</html>
