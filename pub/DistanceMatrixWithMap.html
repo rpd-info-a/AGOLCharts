@@ -185,7 +185,6 @@
       "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/ArcGIS/rest/services/CityCensusDistanceMatrix/FeatureServer/0",
       "query": {
         "where": "1=1",
-        "resultRecordCount": "16",
         "orderByFields": "city104"
       },
       "mappings": {
@@ -225,22 +224,27 @@
     //assign to the chart
     chart.dataset = dataset;
 
-    // chart.transform = function (queryResult, dataset) {
-    //   var features = queryResult.features;
-    //   var newFeatures = [];
+    chart.transform = function (queryResult, dataset) {
+      var features = queryResult.features;
+      var regFeatures = [];
+      var newFeatures = [];
+      console.log(dataset.mappings.y.field)
+      var outYField = dataset.mappings.y.field;
+      //var groupByField = dataset.query.groupByFieldsForStatistics;
 
-    //   for (var i = 0, len = features.length; i < len; i++) {
-    //     if (i = 0) {
-    //       // if this isn't the current year then correct trendline
-    //       //newFeatures.push(features[i]);
-    //     } else {
-    //       console.log(features[i])
-    //       newFeatures.push(features[i]);
-    //     }
-    //   }
-    //   queryResult.features = newFeatures;
-    //   return queryResult;
-    // };
+      var arr = features.map(function ( object ) { return object.attributes[outYField]; });
+       var max = Math.max.apply( null, arr );
+      console.log (max)
+
+
+      for (var i = 0, len = features.length; i < 16; i++) {
+          features[i].attributes[outYField] = (1 - (features[i].attributes[outYField] / (max))) * 100;
+          newFeatures.push(features[i]);
+      }
+
+      queryResult.features = newFeatures;
+      return queryResult;
+    };
 
     //show the chart
     chart.show({
@@ -260,7 +264,6 @@
     function updateChart(id) {
       chart.dataset.query = {
         "where": "1=1",
-        "resultRecordCount": "15",
         "orderByFields": id
       };
 
