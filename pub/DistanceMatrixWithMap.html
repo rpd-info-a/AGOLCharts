@@ -54,7 +54,7 @@
   <script>
     //start map code
     /////////////////////////////////////
-
+    var defaultCity = "city104";
     //Center map somewhere in the middle of the US, zoom level 4
     var map = L.map('map')
     map.on('layeradd', onMapLoad);
@@ -185,7 +185,8 @@
       "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/ArcGIS/rest/services/CityCensusDistanceMatrix/FeatureServer/0",
       "query": {
         "where": "1=1",
-        "orderByFields": "city104"
+        "outFields": "OBJECTID,city_display, id, lat, long_," + defaultCity,
+        "orderByFields": defaultCity
       },
       "mappings": {
         "x": { "field": "city_display", "label": "City" },
@@ -228,18 +229,17 @@
       var features = queryResult.features;
       var regFeatures = [];
       var newFeatures = [];
-      console.log(dataset.mappings.y.field)
       var outYField = dataset.mappings.y.field;
       //var groupByField = dataset.query.groupByFieldsForStatistics;
 
-      var arr = features.map(function ( object ) { return object.attributes[outYField]; });
-       var max = Math.max.apply( null, arr );
-      console.log (max)
+      //find max value for column
+      var arr = features.map(function (object) { return object.attributes[outYField]; });
+      var max = Math.max.apply(null, arr);
 
 
       for (var i = 0, len = features.length; i < 16; i++) {
-          features[i].attributes[outYField] = (1 - (features[i].attributes[outYField] / (max))) * 100;
-          newFeatures.push(features[i]);
+        features[i].attributes[outYField] = (1 - (features[i].attributes[outYField] / (max))) * 100;
+        newFeatures.push(features[i]);
       }
 
       queryResult.features = newFeatures;
@@ -264,6 +264,7 @@
     function updateChart(id) {
       chart.dataset.query = {
         "where": "1=1",
+        "outFields": "OBJECTID,city_display, id, lat, long_," + id ,
         "orderByFields": id
       };
 
