@@ -242,7 +242,7 @@
       var max = Math.max.apply(null, arr);
 
 
-      for (var i = 0, len = features.length; i < 16; i++) {
+      for (var i = 0, len = features.length; i < 21; i++) {
         features[i].attributes[outYField] = (1 - (features[i].attributes[outYField] / (max))) * 100;
         newFeatures.push(features[i]);
       }
