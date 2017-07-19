@@ -15,7 +15,7 @@
     <title>Rochester</title>
 </head>
 
-<body>
+<body style="font-family: Avenir Next W01,Avenir Next,Avenir,Helvetica Neue,Helvetica,Arial,sans-serif; color: #4c4c4c">
 
     <!-- HEADER -->
 
@@ -37,16 +37,16 @@
                 <li><a data-mui-toggle="tab" data-mui-controls="pane-api-7">Larceny</a></li>
             </ul>
             <div class="mui-tabs__pane mui--is-active" id="pane-api-1">
-                <div class="mui-panel">
+                <div class="mui-panel" style: "box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);">
                     <h2>Violent Crime Comparison</h2>
                     This chart shows most cities in our sample clustering between 900 and 1200 violent crimes per 100,000 persons per year. There
-                    are several outliers, with Pontiac, Saginaw and St Louis having much higher average violent crime rates.
-                    Rochester’s average for this time period is 999/100,000/year, or 16th out of the 21 total cities. Rochester’s
+                    are several outliers, with Pontiac, Saginaw and St. Louis having much higher average violent crime rates.
+                    Rochester’s average rate for this time period is 999 or 16th out of the 21 total cities. Rochester’s
                     rate has remained fairly stable across the time period, never peaking above 1260 and remaining consistently
-                    below the yearly average across these cities. Buffalo, the “most similar” comparison city, had an average
-                    rate of 1383 across this time period. Rochester’s 2016 rate was 879 per 100,000, seventh out of the twelve
-                    cities for which data is available. Rochester was either seventh or eight out of twelve for rape, robbery,
-                    and aggravated assault (which, along with murder/manslaughter, are the component crimes of violent crime).
+                    below the yearly combined cities’ average. Buffalo, the most similar comparison city, had an average
+                    rate of 1383 across this time period. Rochester’s 2016 rate was 879,, seventh out of the twelve cities
+                    for which data is available. Rochester was either seventh or eight out of twelve for rape, robbery, and
+                    aggravated assault (which, along with murder/manslaughter, are the component crimes of violent crime).
                     <p>
                         <div class="Violent" style="width:880px;height:560px;"></div>
                 </div>
@@ -56,13 +56,12 @@
                     <h2>Property Crime Comparison</h2>
                     This chart shows that the overall property crime rate in all cities is decreasing. Every single city had lower property crime
                     rates in 2015 than 1985. In many cases, rates are half those in the 1980s. Rochester’s declines have
-                    mirrored the broader national declines, falling from over 10,000/100,000/year to less than 4000 in 2015.
-                    Over the entire time period for which we have data, Rochester’s property crime rate is 6th out of 21;
-                    however property crime has been declining faster in Rochester than in comparable cities. Limiting the
-                    look to 2005 – 2015, Rochester ranks 11th out of 21, very close to Buffalo (5263 & 5328 respectively).
-                    Rochester’s 2016 rate was 3723 per 100,000, continuing the trend of decreasing property crime rates.
-                    For cities with 2016 data available, only Syracuse and Schenectady had lower property crime (burglary,
-                    motor vehicle theft, larceny) rates.
+                    mirrored the broader national declines, falling from over 10,000 per year to less than 4000 in 2015.
+                    Over the entire time period, Rochester’s property crime rate is 6th out of 21; however property crime
+                    has been declining faster in Rochester than in comparable cities. Limiting the look to 2005 – 2015, Rochester
+                    ranks 11th out of 21, very close to Buffalo (5263 & 5328 respectively). Rochester’s 2016 rate was 3723,
+                    continuing the trend of decreasing property crime rates. For cities with 2016 data available, only Syracuse
+                    and Schenectady had lower property crime (burglary, larceny, motor vehicle theft) rates.
                     <p>
                         <div class="Property" style="width:880px;height:560px;"></div>
                 </div>
@@ -70,15 +69,15 @@
             <div class="mui-tabs__pane" id="pane-api-3">
                 <div class="mui-panel">
                     <h2>Homicide Comparison</h2>
-                    St Louis and Richmond are the clear outliers in this group of cities. 2003 appears to be an abnormally low year for St Louis,
-                    and a small spike for Rochester, resulting in the only year that Rochester had a higher rate than St
+                    St Louis and Richmond are the clear outliers in this group of cities. 2003 appears to be an abnormally low year for St. Louis,
+                    and a small spike for Rochester, resulting in the only year that Rochester had a higher rate than St.
                     Louis. Starting in 2005, Richmond’s rate plummets, and rejoins the cluster of cities that have rates
                     between 10 and 20 homicides per 100,000 persons per year. In contrast to Richmond, Wilmington and Syracuse
-                    appear to be trending upwards. The rate of Buffalo, the “most similar” comparison city, stays close to
-                    the rate of Rochester throughout the time period. The average homicide rate across the time period was
-                    19.3/100,000 per year, or 7th out of the 21 cities. Buffalo’s average is 17.2, and St Louis’s is 43.5.
-                    Schenectady, Lansing, and Grand Rapids all had averages under 9. Rochester’s 2016 rate was 21 per 100,000,
-                    sixth out of the thirteen cities for which data is available.
+                    appear to be trending upwards. The rate of Buffalo, the most similar comparison city, stays close to
+                    the rate of Rochester throughout the time period. Rochester’s average homicide rate across the time period
+                    was 19.3, or 7th out of the 21 cities. Buffalo’s average is 17.2, and St Louis’s is 43.5. Schenectady,
+                    Lansing, and Grand Rapids all had averages under 9. Rochester’s 2016 rate was 21.0, sixth out of the
+                    thirteen cities for which data is available.
                     <p>
                         <div class="Homicide" style="width:880px;height:560px;"></div>
                 </div>
@@ -86,13 +85,13 @@
             <div class="mui-tabs__pane" id="pane-api-4">
                 <div class="mui-panel">
                     <h2>Robbery Comparison</h2>
-                    This chart shows the majority of cities in the past three years with between 200 and 400 robberies per hundred thousand persons
-                    per year. Rochester has been in the middle of that range since 2010, with the exception of a spike in
-                    2013 of 436/100,000. Rochester’s 2016 numbers keep it within that range, with a rate of 319. Cleveland,
-                    Milwaukee, and Wilmington have been the top three cities for the past three years with rates well above
-                    500. Lansing had the lowest rate of these cities every year between 2000 and 2014 with rates in the low
-                    200s, however their streak was broken in 2015 when several cities experienced severe drops in reported
-                    robbery, with Schenectady the lowest at 155.
+                    This chart shows the majority of cities in the past three years have a rate between 200 and 400 robberies per year. Rochester
+                    has been in the middle of that range since 2010, with the exception of a spike in the 2013 rate to 436.
+                    Cleveland, Milwaukee, and Wilmington have been the cities with the highest rates the past three years,
+                    well above 500. Lansing had the lowest rate of these cities every year between 2000 and 2014 with rates
+                    in the low 200’s until 2015 when several cities experienced severe drops in reported robbery, with Schenectady
+                    the lowest at 155. Rochester’s 2016 rate of 319 remains consistent with levels since 2013 and lower than
+                    any other 4-year period since 1985.
                     <p>
                         <div class="Robbery" style="width:880px;height:560px;"></div>
                 </div>
@@ -100,9 +99,9 @@
             <div class="mui-tabs__pane" id="pane-api-5">
                 <div class="mui-panel">
                     <h2>Aggravated Assault</h2>
-                    Rochester’s Aggravated Assault rate stays consistently below the average rate of these 21 cities. Across the time period,
-                    Rochester has the 18th highest assault rate, with 434/100,000/year. Two small cities in Michigan, Saginaw
-                    (1795) and Pontiac (1513) have the highest rate for this time period, followed by St Louis at 1445. Rochester’s
+                    Rochester’s aggravated assault rate stays consistently below the average rate of these 21 cities. Across the time period,
+                    Rochester has the 18th highest assault rate, at 434 per year. Two small cities in Michigan, Saginaw (1795)
+                    and Pontiac (1513) have the highest rate for this time period, followed by St Louis at 1445. Rochester’s
                     2016 numbers keep put it at 8th out of the twelve cities for which we have data, at 463. Cincinnati has
                     the lowest rate for 2016 with 257, while St Louis has the highest with 1152.
                     <p>
@@ -112,13 +111,13 @@
             <div class="mui-tabs__pane" id="pane-api-6">
                 <div class="mui-panel">
                     <h2>Burglary Comparison</h2>
-                    The burglary rate chart shows rates declining from the 1980s and 1990s to the current time, with a slight rise in 2010 &
-                    2011. Rochester’s rate mirrors these trends. While Rochester’s burglary rate in the 1980s and early 1990s
-                    was in the upper half of these cities (7th in 1985 and 1986, 4th in 1989, 2nd in 1992, 3rd in 1993),
-                    Rochester’s rate then declined faster than most comparison cities throughout the 1990s. In 2001 and 2002,
-                    Rochester ranked 18th out of the 21 cities. A slight rise in the late 2000s resulted in a peak in 2010
-                    and 2011, with consecutive declines every year since then. Rochester’s 2016 burglary numbers were the
-                    lowest in 30 years, continuing the decrease.
+                    This chart shows collective burglary rates declining from the 1980s and 1990s to the current time, with a slight uptick in
+                    2010 and 2011. Rochester’s rate mirrors this trend. While Rochester’s burglary rate in the 1980s and
+                    early 1990s was in the upper half of these cities (7th in 1985 and 1986, 4th in 1989, 2nd in 1992, 3rd
+                    in 1993), Rochester’s rate declined faster than most comparison cities throughout the 1990s. In 2001
+                    and 2002, Rochester ranked 18th out of the 21 cities. A slight rise in the late 2000s resulted in a peak
+                    in 2010, but Rochester has observed consecutive declines every year since then. Rochester’s 2016 burglary
+                    numbers were the lowest in 30 years, continuing the decrease.
                     <p>
                         <div class="Burglary" style="width:880px;height:560px;"></div>
                 </div>
@@ -130,15 +129,15 @@
                     Unlike burglary, Rochester has consistently had higher than average larceny rates, compared with the
                     other twenty cities. Rochester has been experiencing declines in larceny rates similar to the other cities,
                     but starting from a higher baseline. Those declines resulted in Rochester ending 2015 in the middle of
-                    this group of cities, with the 11th highest rate out of the 21 cities, with 2755 larcenies per 100,000
-                    persons per year. Rochester’s 2016 numbers declined even further, with a rate of 2715. This is the lowest
-                    rate and lowest raw number of larcenies in 30 years.
+                    this group of cities, with the 11th highest rate out of the 21 cities, with a rate of 2755 larcenies
+                    per year. Rochester’s 2016 numbers declined even further, to a rate of 2715. This is the lowest rate
+                    and lowest raw number of larcenies in Rochester’s previous 30 years.
                     <p>
                         <div class="Larceny" style="width:880px;height:560px;"></div>
                 </div>
             </div>
             <script>
-                var paneIds = ['pane-api-1', 'pane-api-2', 'pane-api-3', 'pane-api-4','pane-api-4','pane-api-5','pane-api-6','pane-api-7'],
+                var paneIds = ['pane-api-1', 'pane-api-2', 'pane-api-3', 'pane-api-4', 'pane-api-4', 'pane-api-5', 'pane-api-6', 'pane-api-7'],
                     currPos = 0;
 
                 function activateNext() {
