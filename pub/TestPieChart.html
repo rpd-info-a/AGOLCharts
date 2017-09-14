@@ -1,0 +1,87 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="http://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+</head>
+
+<body>
+  <section style="background-color: #ffffff; color: #4c4c4c" class="layout-section ember-view">
+    <div class="container">
+      <div class="bs-row row ember-view">
+        <div class="col-sm-4">
+          <div class="panel panel-default json-chart-card">
+            <div class="panel-heading">
+              <h4 class="panel-title">Testing</h4>
+            </div>
+            <div class="panel-body">
+              <a href="#" onclick="resetChart(); return false">Reset Chart</a>&nbsp;<span id="filter"></span>
+              <div id="chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var chart = new Cedar({ "type": "pie" });
+
+      // build a SQL case when expression that
+      // converts month numbers to abbreviations
+      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      var groupByExpression = "CASE ";
+      for (var i = 1, len = months.length; i <= len; i++) {
+        var month = months[i - 1];
+        groupByExpression = groupByExpression + "WHEN Month = " + i + " THEN '" + month + "'";
+      }
+      groupByExpression = groupByExpression + " END";
+
+      var datasets = [
+        {
+          "url": "https://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/It's_a_Tornado_Map/FeatureServer/0",
+          "query": {
+            "orderByFields": "FID_Count DESC",
+            // because we're using an expression here
+            // this will be named EXPR_1 in the JSON response's attributes
+            "groupByFieldsForStatistics": groupByExpression,
+            "outStatistics": [{
+              "statisticType": "count",
+              // when counting records (not summing values)
+              // it's best to use the id field because
+              // it is guaranteed to have a value for every record
+              "onStatisticField": "FID",
+              "outStatisticFieldName": "FID_Count"
+            }]
+          }
+        }
+      ];
+      var series = [
+        {
+          "category": { "field": "EXPR_1", "label": "Month" },
+          "value": { "field": "FID_Count", "label": "Number of Tornados" },
+          "radius": 160
+        }
+      ];
+      chart.datasets = datasets;
+      chart.series = series;
+
+
+      chart.tooltip = {
+        // this is the month abbreviation returned from the expresssion above
+        "title": "{EXPR_1}",
+        "content": "{FID_Count} tornados"
+      }
+      chart.show({
+        elementId: "#chart",
+        autolabels: false
+      });
+    </script>
+</body>
+
+</html>
