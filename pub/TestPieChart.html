@@ -65,7 +65,7 @@
         {
           "category": { "field": "EXPR_1", "label": "Month" },
           "value": { "field": "FID_Count", "label": "Number of Tornados" },
-          "radius": 160
+          "radius": 140
         }
       ];
       chart.datasets = datasets;
@@ -79,6 +79,7 @@
       }
       chart.show({
         elementId: "#chart",
+        height:300,
         autolabels: false
       });
     </script>
