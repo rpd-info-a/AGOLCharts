@@ -1,0 +1,172 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="http://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+</head>
+
+<body>
+
+
+  <div class="bs-row row ember-view">
+    <div class="col-sm-4">
+      <div class="panel panel-default json-chart-card">
+        <div class="panel-heading">
+          <h4 class="panel-title">Violent Crime (2014 to Present)</h4>
+        </div>
+        <div class="panel-body">
+          <div id="chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    var chart = new Cedar({ "type": "grouped" });
+
+    var datasets = [
+      {
+        "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+        "query": {
+          "where": "Statute_Text in ('Murder','Non-Negligent Manslaughter') and Reported_Timestamp >= '1/1/2012'",
+          "outFields": "Reported_Date_Year",
+          "groupByFieldsForStatistics": " Reported_Date_Year",
+          "outStatistics": [
+            {
+              "statisticType": "count",
+              "onStatisticField": "OBJECTID",
+              "outStatisticFieldName": "COUNT_OBJECTID"
+            }
+          ]
+        }
+      }
+    ];
+    var series = [
+    {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": "2012",
+          "label": "Count"
+        }
+      },
+      {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": "2013",
+          "label": "Count"
+        }
+      },
+      {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": "2014",
+          "label": "Count"
+        }
+      },
+      {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": "2015",
+          "label": "Count"
+        }
+      },
+      {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": "2016",
+          "label": "Count"
+        }
+      },
+      {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": "2017",
+          "label": "Count"
+        }
+      }
+    ];
+    chart.datasets = datasets;
+    chart.series = series;
+
+    chart.transform = function (queryResult, dataset) {
+      var features = queryResult.features;
+      var newFeatures = [];
+      var outStatsField = dataset.query.outStatistics[0].outStatisticFieldName;
+      var groupByField = dataset.query.groupByFieldsForStatistics;
+
+      // loop through the sorted query results
+      for (var i = 0, len = features.length; i < len; i++) {
+        if (i < features.length) {
+          year = features[i].attributes.Reported_Date_Year
+          features[i].attributes[year] = features[i].attributes[outStatsField]
+          features[i].attributes.Statute_Text = "Homicide"
+          newFeatures.push(features[i]);
+        }
+        console.log(features[i])
+      }
+
+      // return the new features
+      queryResult.features = newFeatures;
+      return queryResult;
+    };
+
+    //
+    function buildTooltip(group, year, count) {
+      return {
+        "id": "tooltip1",
+        "title": "{Statute_Text}",
+        "content": count + " in " + year
+      };
+
+    };
+
+    chart.tooltip = {
+      "id": "tooltip1",
+      "title": "{Statute_Text}",
+      "content": "awating data"
+    };
+    chart.on('mouseover', onChartHover);
+
+    function onChartHover(e, d) {
+      //get selected value for attribute in chart marker
+      //var selected = d[dataset.mappings.x.field];
+      if (d) {
+        chart.tooltip = buildTooltip('Statute_Text', d.Reported_Date_Year, d.COUNT_OBJECTID);
+      }
+
+    };
+    
+    chart.show({
+      elementId: "#chart",
+      height: 300,
+      autolabels: false
+    });
+  </script>
+</body>
+
+</html>
