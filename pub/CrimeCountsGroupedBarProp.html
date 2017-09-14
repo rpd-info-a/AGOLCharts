@@ -107,29 +107,42 @@
 
           newFeatures.push(features[i]);
         }
-        console.log(features[i])
       }
 
       // return the new features
       queryResult.features = newFeatures;
       return queryResult;
     };
+
+    function buildTooltip(group, year, count) {
+      return {
+        "id": "tooltip1",
+        "title": "{Statute_Text}",
+        "content": count + " in " + year
+      };
+
+    };
+
     chart.tooltip = {
-      // this is the month abbreviation returned from the expresssion above
+      "id": "tooltip1",
       "title": "{Statute_Text}",
-      "content": ""
+      "content": "awating data"
+    };
+
+    chart.on('mouseover', onChartHover);
+
+    function onChartHover(e, d) {
+      if (d) {
+        chart.tooltip = buildTooltip('Statute_Text', d.Reported_Date_Year, d.COUNT_OBJECTID);
+      }
+
     }
+
     chart.show({
       elementId: "#chart",
       height: 300,
       autolabels: false
     });
-    chart.override = {
-      scales: [
-        {
-        }
-      ]
-    };
   </script>
 </body>
 

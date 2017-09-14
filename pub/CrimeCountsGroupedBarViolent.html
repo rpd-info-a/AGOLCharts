@@ -35,7 +35,7 @@
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
-          "where": "Statute_Text in ('Robbery','Aggravated Assault', 'Burglary') and Reported_Timestamp >= '1/1/2014'",
+          "where": "Statute_Text in ('Robbery','Aggravated Assault') and Reported_Timestamp >= '1/1/2014'",
           "outFields": "Statute_Text, Reported_Date_Year",
           "groupByFieldsForStatistics": "Statute_Text, Reported_Date_Year",
           "outStatistics": [
@@ -114,22 +114,38 @@
       queryResult.features = newFeatures;
       return queryResult;
     };
+
+    //
+    function buildTooltip(group, year, count) {
+      return {
+        "id": "tooltip1",
+        "title": "{Statute_Text}",
+        "content": count + " in " + year
+      };
+
+    };
+
     chart.tooltip = {
-      // this is the month abbreviation returned from the expresssion above
+      "id": "tooltip1",
       "title": "{Statute_Text}",
-      "content": ""
-    }
+      "content": "awating data"
+    };
+    chart.on('mouseover', onChartHover);
+
+    function onChartHover(e, d) {
+      //get selected value for attribute in chart marker
+      //var selected = d[dataset.mappings.x.field];
+      if (d) {
+        chart.tooltip = buildTooltip('Statute_Text', d.Reported_Date_Year, d.COUNT_OBJECTID);
+      }
+
+    };
+    
     chart.show({
       elementId: "#chart",
       height: 300,
       autolabels: false
     });
-    chart.override = {
-      scales: [
-        {
-        }
-      ]
-    };
   </script>
 </body>
 
