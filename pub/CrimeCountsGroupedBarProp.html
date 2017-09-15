@@ -8,7 +8,7 @@
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
     crossorigin="anonymous">
-  <link rel="stylesheet" href="http://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+  <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
 </head>
 
 <body>
@@ -18,7 +18,7 @@
     <div class="col-sm-6">
       <div class="panel panel-default json-chart-card">
         <div class="panel-heading">
-          <h4 class="panel-title">Property Crime (2014 to Present)</h4>
+          <h4 class="panel-title">Property Crime (2012 to Present)</h4>
         </div>
         <div class="panel-body">
           <div id="chart"></div>
@@ -30,12 +30,19 @@
 
   <script>
     var chart = new Cedar({ "type": "grouped" });
+    var curdate = new Date();
+    var curyear = curdate.getFullYear();
+    var series = [];
+
+    for (var i = 2012; i <= curyear; i++) {
+      series.push(buildSeries(i));
+    };
 
     var datasets = [
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
-          "where": "Statute_Text in ('Larceny','Motor Vehicle Theft', 'Burglary') and Reported_Timestamp >= '1/1/2014'",
+          "where": "Statute_Text in ('Larceny','Motor Vehicle Theft', 'Burglary') and Reported_Timestamp >= '1/1/2012'",
           "outFields": "Statute_Text, Reported_Date_Year",
           "groupByFieldsForStatistics": "Statute_Text, Reported_Date_Year",
           "outStatistics": [
@@ -48,48 +55,7 @@
         }
       }
     ];
-    var series = [
-      {
-        "category": {
-          "field": "Statute_Text",
-          "label": "Statute_Text"
-        },
-        "value": {
-          "field": "2014",
-          "label": "Count"
-        }
-      },
-      {
-        "category": {
-          "field": "Statute_Text",
-          "label": "Statute_Text"
-        },
-        "value": {
-          "field": "2015",
-          "label": "Count"
-        }
-      },
-      {
-        "category": {
-          "field": "Statute_Text",
-          "label": "Statute_Text"
-        },
-        "value": {
-          "field": "2016",
-          "label": "Count"
-        }
-      },
-      {
-        "category": {
-          "field": "Statute_Text",
-          "label": "Statute_Text"
-        },
-        "value": {
-          "field": "2017",
-          "label": "Count"
-        }
-      }
-    ];
+
     chart.datasets = datasets;
     chart.series = series;
 
@@ -103,8 +69,7 @@
       for (var i = 0, len = features.length; i < len; i++) {
         if (i < features.length) {
           year = features[i].attributes.Reported_Date_Year
-          features[i].attributes[year] = features[i].attributes[outStatsField]
-
+          features[i].attributes[year] = features[i].attributes[outStatsField];
           newFeatures.push(features[i]);
         }
       }
@@ -122,6 +87,20 @@
       };
 
     };
+
+    function buildSeries(field) {
+      return {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": field,
+          "label": "Count"
+        }
+      };
+    };
+
 
     chart.tooltip = {
       "id": "tooltip1",
