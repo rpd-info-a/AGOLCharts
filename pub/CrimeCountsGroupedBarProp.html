@@ -14,8 +14,8 @@
 <body>
 
 
-  <div class="bs-row row ember-view">
-    <div class="col-sm-6">
+  <div class="bs-row row ember-view" >
+    <div class="col-sm-6" style="position: fixed;top: 0;left: 0;">
       <div class="panel panel-default json-chart-card">
         <div class="panel-heading">
           <h4 class="panel-title">Property Crime (2012 to Present)</h4>
@@ -29,16 +29,18 @@
 
 
   <script>
-    var chart = new Cedar({ "type": "grouped" });
+    years = [];years2 = [];
     var curdate = new Date();
     var curyear = curdate.getFullYear();
-    var series = [];
 
     for (var i = 2012; i <= curyear; i++) {
-      series.push(buildSeries(i));
+      years.push("attributes."+i);
     };
-
-    var datasets = [
+    for (var i = 2012; i <= curyear; i++) {
+      years2.push(i.toString());
+    };
+console.log(years, years2)
+    var dataset =
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
@@ -52,12 +54,15 @@
               "outStatisticFieldName": "COUNT_OBJECTID"
             }
           ]
+        },
+        "mappings": {
+          "x": { "field": years, "label": "Year" },
+          "group": { "field": "Statute_Text" }
         }
-      }
-    ];
+      };
 
-    chart.datasets = datasets;
-    chart.series = series;
+
+    var chart = new Cedar({ "specification": "/js/grouped.json", "dataset": dataset });
 
     chart.transform = function (queryResult, dataset) {
       var features = queryResult.features;
@@ -73,7 +78,7 @@
           newFeatures.push(features[i]);
         }
       }
-
+      console.log(newFeatures);
       // return the new features
       queryResult.features = newFeatures;
       return queryResult;
@@ -87,20 +92,6 @@
       };
 
     };
-
-    function buildSeries(field) {
-      return {
-        "category": {
-          "field": "Statute_Text",
-          "label": "Statute_Text"
-        },
-        "value": {
-          "field": field,
-          "label": "Count"
-        }
-      };
-    };
-
 
     chart.tooltip = {
       "id": "tooltip1",
