@@ -14,7 +14,7 @@
 <body>
 
 
-  <div class="bs-row row ember-view" >
+  <div class="bs-row row ember-view">
     <div class="col-sm-6" style="position: fixed;top: 0;left: 0;">
       <div class="panel panel-default json-chart-card">
         <div class="panel-heading">
@@ -62,7 +62,7 @@ console.log(years, years2)
       };
 
 
-    var chart = new Cedar({ "specification": "pub/js/grouped.json", "dataset": dataset });
+    var chart = new Cedar({ "specification": "/js/grouped.json", "dataset": dataset });
 
     chart.transform = function (queryResult, dataset) {
       var features = queryResult.features;

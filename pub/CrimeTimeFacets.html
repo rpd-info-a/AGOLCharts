@@ -29,86 +29,22 @@
 
 
   <script>
-    var chart = new Cedar({ "specification": "https://esri.github.io/cedar/data/templates/time-dots.json" });
-
-    var datasets = [
-      {
-        "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
-        "query": {
-          "where": "Reported_Date_Year = 2017 and Reported_Timestamp is not null",
-          "groupByFieldsForStatistics": "Reported_Timestamp, Statute_Text, Geo_Section",
-          "outStatistics": [
-            {
-              "statisticType": "count",
-              "onStatisticField": "OBJECTID",
-              "outStatisticFieldName": "COUNT_OBJECTID"
-            }
-          ]
-        },
-        "mappings": {
-          "time": { "field": "Reported_Timestamp" },
-          "aspect": { "field": "Statute_Text" },
-          "facet": { "field": "WARD" },
-          "color": { "field": "SHIFT" }
-        }
+  var chart = new Cedar({"specification":"https://esri.github.io/cedar/data/templates/time-dots.json"});
+  
+    var dataset = {
+      "url":"https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/MPD/MapServer/8",
+      "mappings":{
+        "time":   {"field":"REPORT_DAT"},
+        "aspect": {"field":"OFFENSE"},
+        "facet":  {"field":"WARD"},
+        "color":  {"field":"SHIFT"}
       }
-    ];
-   
-    chart.datasets = datasets;
-    //chart.series = series;
-
-    chart.transform = function (queryResult, dataset) {
-      var features = queryResult.features;
-      var newFeatures = [];
-      var outStatsField = dataset.query.outStatistics[0].outStatisticFieldName;
-      var groupByField = dataset.query.groupByFieldsForStatistics;
-
-      // loop through the sorted query results
-      for (var i = 0, len = features.length; i < len; i++) {
-        if (i < features.length) {
-          year = features[i].attributes.Reported_Date_Year
-          features[i].attributes[year] = features[i].attributes[outStatsField]
-          features[i].attributes.Statute_Text = "Homicide"
-          newFeatures.push(features[i]);
-        }
-        // console.log(features[i])
-      }
-
-      // return the new features
-      queryResult.features = newFeatures;
-      return queryResult;
     };
-
-    //
-    function buildTooltip(group, year, count) {
-      return {
-        "id": "tooltip1",
-        "title": "{Statute_Text}",
-        "content": count + " in " + year
-      };
-
-    };
-
-    chart.tooltip = {
-      "id": "tooltip1",
-      "title": "{Statute_Text}",
-      "content": "awating data"
-    };
-    chart.on('mouseover', onChartHover);
-
-    function onChartHover(e, d) {
-      //get selected value for attribute in chart marker
-      //var selected = d[dataset.mappings.x.field];
-      if (d) {
-        chart.tooltip = buildTooltip('Statute_Text', d.Reported_Date_Year, d.COUNT_OBJECTID);
-      }
-
-    };
-
+    chart.dataset = dataset;
+  
     chart.show({
-      elementId: "#chart",
-      height: 300,
-      autolabels: false
+      "elementId": "#chart",
+      height: 1000
     });
   </script>
 </body>
