@@ -36,8 +36,8 @@
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
           "where": "Reported_Date_Year >=2016",
-          "outFields": "Count(OBJECTID), Patrol_Section",
-          "groupByFieldsForStatistics": "Patrol_Section",
+          "outFields": "Count(OBJECTID), Geo_Section",
+          "groupByFieldsForStatistics": "Geo_Section",
           "outStatistics": [
             {
               "statisticType": "count",
@@ -51,7 +51,7 @@
     var series = [
       {
         "category": {
-          "field": "Patrol_Section",
+          "field": "Geo_Section",
           "label": "Section"
         },
         "value": {
@@ -85,7 +85,7 @@
 
     chart.tooltip = {
       // this is the month abbreviation returned from the expresssion above
-      "title": "{Patrol_Section}",
+      "title": "{Geo_Section}",
       "content": "{COUNT_OBJECTID}% of crimes"
     }
     chart.show({
