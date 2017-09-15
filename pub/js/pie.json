@@ -1,0 +1,230 @@
+{
+    "type": "pie",
+    "datasets": [
+        {
+            "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/ArcGIS/rest/services/RPD_Police_Personnel/FeatureServer/0",
+            "query": {
+                "groupByFieldsForStatistics": "Ethnicity",
+                "outStatistics": [
+                    {
+                        "statisticType": "count",
+                        "onStatisticField": "OBJECTID",
+                        "outStatisticFieldName": "COUNT_OBJECTID"
+                    }
+                ]
+            }
+        }
+    ],
+    "series": [
+        {
+            "category": {
+                "field": "Ethnicity",
+                "label": "Ethnicity"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            },
+            "radius": 140
+        }
+    ]
+}
+
+{
+    "type": "pie",
+    "datasets": [
+        {
+            "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/ArcGIS/rest/services/RPD_Police_Personnel/FeatureServer/0",
+            "query": {
+                "groupByFieldsForStatistics": "Sex",
+                "outStatistics": [
+                    {
+                        "statisticType": "count",
+                        "onStatisticField": "OBJECTID",
+                        "outStatisticFieldName": "COUNT_OBJECTID"
+                    }
+                ]
+            }
+        }
+    ],
+    "series": [
+        {
+            "category": {
+                "field": "Sex",
+                "label": "Sex"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            },
+            "radius": 140
+        }
+    ]
+}
+
+{
+    "type": "pie",
+    "datasets": [
+        {
+            "url": "https://services7.arcgis.com/wMvCpnbQEKXZsPSQ/ArcGIS/rest/services/RPD_Police_Personnel/FeatureServer/0",
+            "query": {
+                "outFields": "Count(OBJECTID), CASE WHEN Residency = 'Inside_City' THEN 'City Resident' ELSE 'Non Resident' END",
+                "groupByFieldsForStatistics": "CASE WHEN Residency = 'Inside_City' THEN 'City Resident' ELSE 'Non Resident' END",
+                "outStatistics": [
+                    {
+                        "statisticType": "count",
+                        "onStatisticField": "OBJECTID",
+                        "outStatisticFieldName": "COUNT_OBJECTID"
+                    }
+                ]
+            }
+        }
+    ],
+    "series": [
+        {
+            "category": {
+                "field": "Residency",
+                "label": "Month"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Residency"
+            },
+            "radius": 140
+        }
+    ]
+}
+
+
+    {
+    "type": "pie",
+    "datasets": [
+        {
+            "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+            "query": {
+                "outFields": "Count(OBJECTID), Patrol_Section",
+                "groupByFieldsForStatistics": "Patrol_Section",
+                "outStatistics": [
+                    {
+                        "statisticType": "count",
+                        "onStatisticField": "OBJECTID",
+                        "outStatisticFieldName": "COUNT_OBJECTID"
+                    }
+                ]
+            }
+        }
+    ],
+    "series": [
+        {
+            "category": {
+                "field": "Patrol_Section",
+                "label": "Section"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            },
+            "radius": 140
+        }
+    ],
+    "transform": [
+        {
+            "type": "filter",
+            "expr": "Patrol_Section <> ***"
+        }
+    ]
+}
+
+
+{
+    "type": "pie",
+    "datasets": [
+        {
+            "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+            "query": {
+                "outFields": "Count(OBJECTID), Patrol_Section",
+                "groupByFieldsForStatistics": "Patrol_Section",
+                "outStatistics": [
+                    {
+                        "statisticType": "count",
+                        "onStatisticField": "OBJECTID",
+                        "outStatisticFieldName": "COUNT_OBJECTID"
+                    }
+                ]
+            }
+        }
+    ],
+    "series": [
+        {
+            "category": {
+                "field": "Patrol_Section",
+                "label": "Section"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            },
+            "radius": 140
+        }
+    ],
+    "transform": [
+        {
+            "type": "filter",
+            "expr": "Patrol_Section <> ***"
+        }
+    ]
+}
+
+
+{
+    "type": "grouped",
+    "datasets": [
+        {
+            "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+            "query": {
+                "where": "Statute_Text in ('Homicide', 'Robbery','Aggravated Assault', 'Burglary') and Reported_Timestamp >= '1/1/2014'",
+                "outFields": "Statute_Text, Reported_Date_Year",
+                "groupByFieldsForStatistics": "Statute_Text, Reported_Date_Year",
+                "outStatistics": [
+                    {
+                        "statisticType": "count",
+                        "onStatisticField": "OBJECTID",
+                        "outStatisticFieldName": "COUNT_OBJECTID"
+                    }
+                ]
+            }
+        }
+    ],
+    "series": [
+        {
+            "category": {
+                "field": "Statute_Text",
+                "label": "Statute_Text"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            }
+        },
+        {
+            "category": {
+                "field": "Statute_Text",
+                "label": "Statute_Text"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            }
+        },
+        {
+            "category": {
+                "field": "Statute_Text",
+                "label": "Statute_Text"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            }
+        }
+    ]
+}

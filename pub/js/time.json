@@ -1,0 +1,32 @@
+{
+    "type": "time",
+    "datasets": [
+        {
+            "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+            "query": {
+                "where": "Reported_Date_Year =2017",
+                "groupByFieldsForStatistics": "Reported_Date_Month",
+                "orderByFields": "Reported_Date_Month",
+                "outStatistics": [
+                    {
+                        "statisticType": "count",
+                        "onStatisticField": "OBJECTID",
+                        "outStatisticFieldName": "COUNT_OBJECTID"
+                    }
+                ]
+            }
+        }
+    ],
+    "series": [
+        {
+            "category": {
+                "field": "Reported_Date_Month",
+                "label": "Date"
+            },
+            "value": {
+                "field": "COUNT_OBJECTID",
+                "label": "Count"
+            }
+        }
+    ]
+}
