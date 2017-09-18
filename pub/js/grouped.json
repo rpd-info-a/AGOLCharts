@@ -125,10 +125,22 @@
             {
                 "fill": "color",
                 "title": "{x.label}",
-                "labels": {
-                    "text": {
-                        "scale": "legend_labels",
-                        "field": "data2"
+                "properties": {
+                    "symbols": {
+                        "size": {
+                            "value": 200
+                        },
+                        "shape": {
+                            "value": "M-0.4,-0.4L0.4,-0.4 0.4,0.4 -0.4,0.4Z"
+                        }
+                    },
+                    "labels": {
+                        "fontSize": {
+                            "value": 12
+                        },
+                        "text": {
+                            "template": "{{datum.data|right:4}}"
+                        }
                     }
                 }
             }

@@ -29,22 +29,20 @@
 
 
   <script>
-    years = [];years2 = [];
+    var chart = new Cedar({ "type": "grouped" });
     var curdate = new Date();
     var curyear = curdate.getFullYear();
+    var series = [];
 
     for (var i = 2012; i <= curyear; i++) {
-      years.push("attributes."+i);
-    };
-    for (var i = 2012; i <= curyear; i++) {
-      years2.push(i.toString());
+      series.push(buildSeries(i));
     };
 
-    var dataset =
+    var datasets = [
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
-          "where": "Statute_Text in ('Larceny','Motor Vehicle Theft', 'Burglary') and Reported_Timestamp >= '1/1/2012'",
+          "where": "Statute_Text in ('Robbery','Aggravated Assault') and Reported_Timestamp >= '1/1/2012'",
           "outFields": "Statute_Text, Reported_Date_Year",
           "groupByFieldsForStatistics": "Statute_Text, Reported_Date_Year",
           "outStatistics": [
@@ -54,15 +52,12 @@
               "outStatisticFieldName": "COUNT_OBJECTID"
             }
           ]
-        },
-        "mappings": {
-          "x": { "field": years, "label": "Year" },
-          "group": { "field": "Statute_Text" }
         }
-      };
+      }
+    ];
 
-
-    var chart = new Cedar({ "specification": "js/grouped.json", "dataset": dataset });
+    chart.datasets = datasets;
+    chart.series = series;
 
     chart.transform = function (queryResult, dataset) {
       var features = queryResult.features;
@@ -74,11 +69,11 @@
       for (var i = 0, len = features.length; i < len; i++) {
         if (i < features.length) {
           year = features[i].attributes.Reported_Date_Year
+          year = features[i].attributes.Reported_Date_Year
           features[i].attributes[year] = features[i].attributes[outStatsField];
           newFeatures.push(features[i]);
         }
       }
-
       // return the new features
       queryResult.features = newFeatures;
       return queryResult;
@@ -92,11 +87,50 @@
       };
 
     };
-
+    function buildSeries(field) {
+      return {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": field,
+          "label": "Count"
+        }
+      };
+    };
     chart.tooltip = {
       "id": "tooltip1",
       "title": "{Statute_Text}",
       "content": "awating data"
+    };
+
+
+    chart.override = {
+      "legends": [
+        {
+          "fill": "color",
+          "title": "Years",
+          "properties": {
+            "symbols": {
+              "size": {
+                "value": 200
+              },
+              "shape": {
+                "value": "M-0.4,-0.4L0.4,-0.4 0.4,0.4 -0.4,0.4Z"
+              }
+            },
+            "labels": {
+              "fontSize": {
+                "value": 12
+              },
+              "text": {
+                "template": "{{datum.data|right:4}}"
+              }
+            }
+          }
+        }
+      ],
     };
 
     chart.on('mouseover', onChartHover);

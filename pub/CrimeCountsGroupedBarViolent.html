@@ -111,6 +111,33 @@
     };
     chart.on('mouseover', onChartHover);
 
+    chart.override = {
+      "legends": [
+        {
+          "fill": "color",
+          "title": "Years",
+          "properties": {
+            "symbols": {
+              "size": {
+                "value": 200
+              },
+              "shape": {
+                "value": "M-0.4,-0.4L0.4,-0.4 0.4,0.4 -0.4,0.4Z"
+              }
+            },
+            "labels": {
+              "fontSize": {
+                "value": 12
+              },
+              "text": {
+                "template": "{{datum.data|right:4}}"
+              }
+            }
+          }
+        }
+      ],
+    };
+
     function onChartHover(e, d) {
       //get selected value for attribute in chart marker
       //var selected = d[dataset.mappings.x.field];
