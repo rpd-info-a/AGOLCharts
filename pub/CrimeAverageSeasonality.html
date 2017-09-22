@@ -2,10 +2,10 @@
 
 <head>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
-  <!--<script type="text/javascript" src="js/vega.js"></script>-->
+  <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>-->
+  <script type="text/javascript" src="js/vega.js"></script>
   <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
- 
+
 
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
@@ -32,7 +32,23 @@
 
   <script>
     // code sample that uses custom spec - used this to learn about chart overrides for legend text
+    var months = [
+      {"id": 1, "label": "January"},
+      {"id": 2, "label": "February"},
+      {"id": 3, "label": "March"},
+      {"id": 4, "label": "April"},
+      {"id": 5, "label": "May"},
+      {"id": 6, "label": "June"},
+      {"id": 7, "label": "July"},
+      {"id": 8, "label": "August"},
+      {"id": 9, "label": "September"},
+      {"id": 10, "label": "October"},
+      {"id": 11, "label": "November"},
+      {"id": 12, "label": "December"}
+    ];
 
+    var x = {id: 'a', value: 3.14}
+    console.log (months)
     var dataset =
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
@@ -50,19 +66,18 @@
         },
         "mappings": {
           "time": { "field": "Reported_Date_Month", "label": "Month" },
-          "value": { "field": "COUNT_OBJECTID", "label": "Count" },
-          "group": { "field": "Reported_Date_Year", "label": "Group" },
+          "value": { "field": "COUNT_OBJECTID", "label": "Count" }
         }
       };
 
 
     var chart = new Cedar({ "specification": "js/timeaverage.json", "dataset": dataset });
 
-    function buildTooltip (month, count) {
+    function buildTooltip(month, count) {
       return {
         "id": "tooltip1",
         "title": month,
-        "content": count 
+        "content": count
       };
 
     };
