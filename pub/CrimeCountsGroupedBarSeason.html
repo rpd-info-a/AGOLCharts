@@ -1,0 +1,178 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+</head>
+
+<body style="padding-top:0px;">
+
+
+  <div class="bs-row row ember-view">
+    <div class="col-sm-6">
+      <div class="panel panel-default json-chart-card">
+        <div class="panel-heading">
+          <h4 class="panel-title">Seasonality (Average Count by Month)</h4>
+        </div>
+        <div class="panel-body">
+          <div id="chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    var chart = new Cedar({ "type": "bar" });
+    var curdate = new Date();
+    var curyear = curdate.getFullYear();
+    var series = [];
+
+    // for (var i = 2012; i <= curyear; i++) {
+    //   series.push(buildSeries(i));
+    // };
+
+    var datasets = [
+      {
+        "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+        "query": {
+          "where": "Reported_Date_Year <=2016",
+          "groupByFieldsForStatistics": "Reported_Date_Month, Reported_Date_Year",
+          "outStatistics": [
+            {
+              "statisticType": "count",
+              "onStatisticField": "OBJECTID",
+              "outStatisticFieldName": "COUNT_OBJECTID"
+            }
+          ]
+        }
+      }
+    ];
+    var series = [
+      {
+        "category": { "field": "Reported_Date_Month", "label": "Month" },
+        "value": { "field": "COUNT_OBJECTID", "label": "Average Count" }
+      }
+    ];
+    chart.datasets = datasets;
+    chart.series = series;
+
+    // chart.transform = function (queryResult, dataset) {
+    //   var features = queryResult.features;
+    //   var newFeatures = [];
+    //   var outStatsField = dataset.query.outStatistics[0].outStatisticFieldName;
+    //   var groupByField = dataset.query.groupByFieldsForStatistics;
+
+    //   // loop through the sorted query results
+    //   for (var i = 0, len = features.length; i < len; i++) {
+    //     if (i < features.length) {
+    //       // year = features[i].attributes.Reported_Date_Year
+    //       // features[i].attributes[year] = features[i].attributes[outStatsField]
+
+    //       for (var obj in features[i]) {
+
+    //         console.log(obj)
+    //       }
+    //       newFeatures.push(features[i]);
+    //     }
+    //     //console.log(features[i])
+    //   }
+
+    //   // return the new features
+    //   queryResult.features = newFeatures;
+    //   return queryResult;
+    // };
+
+    //
+    function buildTooltip(group, year, count) {
+      return {
+        "id": "tooltip1",
+        "title": "{Reported_Date_Month}",
+        "content": count + " in " + year
+      };
+
+    };
+
+    function buildSeries(field) {
+      return {
+        "category": {
+          "field": "Reported_Date_Month",
+          "label": "Reported_Date_Month"
+        },
+        "value": {
+          "field": field,
+          "label": "Count"
+        }
+      };
+    };
+
+    chart.tooltip = {
+      "id": "tooltip1",
+      "title": "{Reported_Date_Month}",
+      "content": "awating data"
+    };
+    chart.on('mouseover', onChartHover);
+
+    // chart.override = {
+
+    //   "data": [
+    //     {
+    //       "transform": [
+    //       {"type": "aggregate", "summarize": {"datum.y": ["average", "median"]}}
+    //       ]
+    //     }
+    //   ]
+    // }
+
+
+    // chart.override = {
+    //   "legends": [
+    //     {
+    //       "fill": "color",
+    //       "title": "Years",
+    //       "properties": {
+    //         "symbols": {
+    //           "size": {
+    //             "value": 200
+    //           },
+    //           "shape": {
+    //             "value": "M-0.4,-0.4L0.4,-0.4 0.4,0.4 -0.4,0.4Z"
+    //           }
+    //         },
+    //         "labels": {
+    //           "fontSize": {
+    //             "value": 12
+    //           },
+    //           "text": {
+    //             "template": "{{datum.data|right:4}}"
+    //           }
+    //         }
+    //       }
+    //     }
+    //   ],
+    // };
+
+    function onChartHover(e, d) {
+      //get selected value for attribute in chart marker
+      //var selected = d[dataset.mappings.x.field];
+      if (d) {
+        chart.tooltip = buildTooltip('Statute_Text', d.Reported_Date_Year, d.COUNT_OBJECTID);
+      }
+
+    };
+
+    chart.show({
+      elementId: "#chart",
+      height: 300,
+      autolabels: false
+    });
+  </script>
+</body>
+
+</html>

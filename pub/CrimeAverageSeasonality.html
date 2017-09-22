@@ -1,0 +1,94 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+ <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>-->
+  <script type="text/javascript" src="js/vega.js"></script> 
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+ 
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+</head>
+
+<body style="padding-top:0px;">
+
+
+  <div class="bs-row row ember-view">
+    <div class="col-sm-6">
+      <div class="panel panel-default json-chart-card">
+        <div class="panel-heading">
+          <h4 class="panel-title">Average Count by Month from 5yrs of Data (Seasonality)</h4>
+        </div>
+        <div class="panel-body">
+          <div id="chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    // code sample that uses custom spec - used this to learn about chart overrides for legend text
+
+    var dataset =
+      {
+        "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+        "query": {
+          "where": "Reported_Date_Year <=2016",
+          "groupByFieldsForStatistics": "Reported_Date_Month, Reported_Date_Year",
+          "orderByFields": "Reported_Date_Month",
+          "outStatistics": [
+            {
+              "statisticType": "count",
+              "onStatisticField": "OBJECTID",
+              "outStatisticFieldName": "COUNT_OBJECTID"
+            }
+          ]
+        },
+        "mappings": {
+          "time": { "field": "Reported_Date_Month", "label": "Month" },
+          "value": { "field": "COUNT_OBJECTID", "label": "Count" },
+          "group": { "field": "Reported_Date_Year", "label": "Group" },
+        }
+      };
+
+
+    var chart = new Cedar({ "specification": "js/timeaverage.json", "dataset": dataset });
+
+    function buildTooltip (month, count) {
+      return {
+        "id": "tooltip1",
+        "title": month,
+        "content": count 
+      };
+
+    };
+
+    chart.tooltip = {
+      "id": "tooltip",
+      "title": "test",
+      "content": "test"
+    };
+
+    //chart.on('mouseover', onChartHover);
+
+    function onChartHover(e, d) {
+      if (d) {
+        console.log(e)
+        chart.tooltip = buildTooltip(d.Reported_Date_Month, d.mean);
+      }
+
+    }
+
+    chart.show({
+      elementId: "#chart",
+      height: 300,
+      autolabels: false
+    });
+  </script>
+</body>
+
+</html>
