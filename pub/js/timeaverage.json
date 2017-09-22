@@ -13,13 +13,6 @@
                 "numeric"
             ],
             "required": true
-        },
-        {
-            "name": "group",
-            "type": [
-                "numeric"
-            ],
-            "required": true
         }
     ],
     "template": {
@@ -69,8 +62,16 @@
                             }
                         ]
                     },
-                    {"type": "formula", "field": "upper", "expr": "datum.attributes_stdev+datum.attributes_mean"},
-                    {"type": "formula", "field": "lower", "expr": "datum.attributes_mean-datum.attributes_stdev"}
+                    {
+                        "type": "formula",
+                        "field": "upper",
+                        "expr": "datum.attributes_stdev+datum.attributes_mean"
+                    },
+                    {
+                        "type": "formula",
+                        "field": "lower",
+                        "expr": "datum.attributes_mean-datum.attributes_stdev"
+                    }
                 ]
             }
         ],
@@ -84,6 +85,38 @@
                     "data": "stats",
                     "field": "[attributes.{time.field}]"
                 }
+            },
+            {
+                "name": "xlabels",
+                "type": "ordinal",
+                "domain": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12
+                ],
+                "range": [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                ]
             },
             {
                 "name": "y",
@@ -120,6 +153,18 @@
                         }
                     },
                     "labels": {
+                        "angle": {
+                            "value": 40
+                        },
+                        "align": {
+                            "value": "left"
+                        },
+                        "baseline": {
+                            "value": "middle"
+                        },
+                        "text": {
+                            "scale": "xlabels"
+                        },
                         "fill": {
                             "value": "#999"
                         },
