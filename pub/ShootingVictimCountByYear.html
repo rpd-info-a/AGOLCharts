@@ -14,7 +14,7 @@
 <body style="padding-top:0px;">
 
   <div class="bs-row row ember-view">
-    <div class="col-md-6">
+    <div class="col-sm-6">
       <div class="panel panel-default json-chart-card">
         <div class="panel-heading">
           <h4 class="panel-title">Shooting Victims by Year</h4>
@@ -90,6 +90,33 @@
       autolabels: true
     });
     chart.on('click', facetChart);
+
+    chart.override = {
+      "height": 350,
+      "scales": [
+        {
+          "name": "x",
+          "nice": true
+        },
+        {
+          "name": "y",
+          "nice": true,
+          "domainMin": 80,
+          "zero": false
+        }
+      ],
+      "marks": [
+        {
+          "properties": {
+            "enter": {
+            },
+            "update": {
+              "y2": { "scale": "y", "value": 80 },
+            }
+          }
+        }
+      ]
+    };
   </script>
 </body>
 
