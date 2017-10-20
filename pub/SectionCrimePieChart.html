@@ -34,7 +34,7 @@
           {
             "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
             "query": {
-              "where": "Reported_Date_Year >=2016",
+              "where": "Reported_Date_Year >=2016 and Geo_Section is not NULL",
               "outFields": "Count(OBJECTID), Geo_Section",
               "groupByFieldsForStatistics": "Geo_Section",
               "outStatistics": [
