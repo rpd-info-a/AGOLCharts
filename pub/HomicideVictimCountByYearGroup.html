@@ -17,10 +17,11 @@
     <div class="col-md-8">
       <div class="panel panel-default json-chart-card">
         <div class="panel-heading">
-          <h4 class="panel-title">Homicide Victims by Year</h4>
+          <h4 class="panel-title">Homicide Victims and Incidents by Year</h4>
         </div>
         <div class="panel-body">
-          <a href="#" onclick="resetChart(); return false">Reset Chart</a>&nbsp;<span id="filter"></span>
+          <a href="#" onclick="resetChart(); return false">Reset Chart</a>&nbsp;
+          <span id="filter"></span>
           <div id="chart"></div>
         </div>
       </div>
@@ -29,10 +30,24 @@
 
   <script>
     var chart = new Cedar({
-      "type": "bar"
+      "type": "grouped"
     });
+
+    function buildSeries(group, count) {
+      return [
+        {
+          "category": { "field": group, "label": "Name" },
+          "value": { "field": "Victims", "label": "Count" }
+        },
+          {
+            "category": { "field": group, "label": "Name" },
+            "value": { "field": "Incidents", "label": "Count" }
+          }
+      ]
+     };
+
     function buildDataset(group, count) {
-      return {
+      return [{
         "url": "https://gis.cityofrochester.gov/arcssl/rest/services/RPD/Homicide_pub/FeatureServer/0",
         "query": {
           "where": "OccurredYear > 1999",
@@ -40,68 +55,92 @@
           "outStatistics": [{
             "statisticType": "sum",
             "onStatisticField": count,
-            "outStatisticFieldName": count + "_SUM"
+            "outStatisticFieldName": "Victims"
           },
           {
             "statisticType": "count",
             "onStatisticField": count,
-            "outStatisticFieldName": count + "_COUNT"
+            "outStatisticFieldName": "Incidents"
           }]
-        },
-        "mappings": {
-          "x": { "field": group, "label": "Year" },
-          "y": { "field": count + "_SUM", "label": "# of Victims" },
-          "sort": count + "_SUM DESC"
         }
-      };
+      }];
     }
     function buildTooltip(group, count) {
       return {
         "id": "tooltip1",
         "title": "{" + group + "}",
-        "content": "{" + count + "_SUM} Victims"
+        "content": "{Victims} Victims in {Incidents} Incidents"
       };
 
     }
     chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
-    chart.dataset = buildDataset('OccurredYear', 'VictimCount');
+    chart.datasets = buildDataset('OccurredYear', 'VictimCount');
+    chart.series = buildSeries('OccurredYear', 'VictimCount');
 
 
     function facetChart(event, data) {
-      var selected = data[chart.dataset.mappings.x.field];
-      if (chart.dataset.mappings.x.field == "OccurredYear") {
-        var where = chart.dataset.mappings.x.field + " = " + selected;
+      var selected = data[chart.series[0].category.field];
+      if (chart.series[0].category.field == "OccurredYear") {
+        var where = chart.series[0].category.field + " = " + selected;
         var whereText = "Year = " + selected;
-        chart.dataset = buildDataset('WeaponCategory', 'VictimCount');
+        chart.datasets = buildDataset('WeaponCategory', 'VictimCount');
         chart.tooltip = buildTooltip('WeaponCategory', 'VictimCount');
+        chart.series = buildSeries('WeaponCategory', 'VictimCount');
       } else {
-        var where = chart.dataset.mappings.x.field + " = '" + selected + "' and " + 'OccurredYear > 1999';
+        var where = chart.series[0].category.field + " = '" + selected + "' and " + 'OccurredYear > 1999';
         var whereText = "Weapon Category = " + selected;
-        chart.dataset = buildDataset('OccurredYear', 'VictimCount');
+        chart.datasets = buildDataset('OccurredYear', 'VictimCount');
         chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
+        chart.series = buildSeries('OccurredYear', 'VictimCount');
       }
-      chart.dataset.query.where = where;
+      chart.datasets[0].query.where = where;
       document.getElementById('filter').innerHTML = whereText;
       chart.update()
     }
 
     function resetChart() {
       document.getElementById('filter').innerHTML = "no filter";
-      chart.dataset = buildDataset('OccurredYear', 'VictimCount');
+      chart.datasets = buildDataset('OccurredYear', 'VictimCount');
       chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
-
+      chart.series = buildSeries('OccurredYear', 'VictimCount');
       chart.update()
     }
 
+    chart.override = {
+      "height": 350,
+      "legends": [
+        {
+          "fill": "color",
+          "title": "Count",
+          "properties": {
+            "symbols": {
+              "size": {
+                "value": 200
+              },
+              "shape": {
+                "value": "M-0.4,-0.4L0.4,-0.4 0.4,0.4 -0.4,0.4Z"
+              }
+            },
+            "labels": {
+              "fontSize": {
+                "value": 12
+              },
+              "text": {
+                "template": "{{datum.data|slice:11,22}}"
+              }
+            }
+          }
+        }
+      ]
+    };
+
     chart.show({
       elementId: "#chart",
-      autolabels: true
+      autolabels: false
     });
     chart.on('click', facetChart);
 
-    chart.override = {
-      "height": 350,
-         };
+
   </script>
 </body>
 
