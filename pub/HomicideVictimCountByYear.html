@@ -1,0 +1,103 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+
+</head>
+
+<body style="padding-top:0px;">
+
+  <div class="bs-row row ember-view">
+    <div class="col-md-8">
+      <div class="panel panel-default json-chart-card">
+        <div class="panel-heading">
+          <h4 class="panel-title">Homicide Victims by Year</h4>
+        </div>
+        <div class="panel-body">
+          <a href="#" onclick="resetChart(); return false">Reset Chart</a>&nbsp;<span id="filter"></span>
+          <div id="chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var chart = new Cedar({
+      "type": "bar"
+    });
+    function buildDataset(group, count) {
+      return {
+        "url": "https://gis.cityofrochester.gov/arcssl/rest/services/RPD/Homicide_pub/FeatureServer/0",
+        "query": {
+          "where": "OccurredYear > 1999",
+          "groupByFieldsForStatistics": group,
+          "outStatistics": [{
+            "statisticType": "count",
+            "onStatisticField": count,
+            "outStatisticFieldName": count + "_SUM"
+          }]
+        },
+        "mappings": {
+          "x": { "field": group, "label": "Year" },
+          "y": { "field": count + "_SUM", "label": "# of Victims" },
+          "sort": count + "_SUM DESC"
+        }
+      };
+    }
+    function buildTooltip(group, count) {
+      return {
+        "id": "tooltip1",
+        "title": "{" + group + "}",
+        "content": "{" + count + "_SUM} Victims"
+      };
+
+    }
+    chart.tooltip = buildTooltip('OccurredYear', 'ObjectID');
+    chart.dataset = buildDataset('OccurredYear', 'ObjectID');
+
+
+    function facetChart(event, data) {
+      var selected = data[chart.dataset.mappings.x.field];
+      if (chart.dataset.mappings.x.field == "OccurredYear") {
+        var where = chart.dataset.mappings.x.field + " = " + selected;
+        var whereText = chart.dataset.mappings.x.field + " = " + selected;
+        chart.dataset = buildDataset('WeaponCategory', 'ObjectID');
+        chart.tooltip = buildTooltip('WeaponCategory', 'ObjectID');
+      } else {
+        var where = chart.dataset.mappings.x.field + " = '" + selected + "' and " + 'OccurredYear > 1999';
+        var whereText = chart.dataset.mappings.x.field + " = '" + selected + "'";
+        chart.dataset = buildDataset('OccurredYear', 'ObjectID');
+        chart.tooltip = buildTooltip('OccurredYear', 'ObjectID');
+      }
+      chart.dataset.query.where = where
+      document.getElementById('filter').innerHTML = whereText;
+      chart.update()
+    }
+
+    function resetChart() {
+      document.getElementById('filter').innerHTML = "no filter";
+      chart.dataset = buildDataset('OccurredYear', 'ObjectID');
+      chart.tooltip = buildTooltip('OccurredYear', 'ObjectID');
+
+      chart.update()
+    }
+
+    chart.show({
+      elementId: "#chart",
+      autolabels: true
+    });
+    chart.on('click', facetChart);
+
+    chart.override = {
+      "height": 350,
+         };
+  </script>
+</body>
+
+</html>
