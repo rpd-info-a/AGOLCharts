@@ -65,15 +65,17 @@
       var selected = data[chart.dataset.mappings.x.field];
       if (chart.dataset.mappings.x.field == "Occurred_Year") {
         var where = chart.dataset.mappings.x.field + " = " + selected;
+        var whereText =  "Year = " + selected;
         chart.dataset = buildDataset('Crime_Type', 'ObjectID');
         chart.tooltip = buildTooltip('Crime_Type', 'ObjectID');
       } else {
         var where = chart.dataset.mappings.x.field + " = '" + selected + "'";
+        var whereText =  "Crime Type = " + selected;
         chart.dataset = buildDataset('Occurred_Year', 'ObjectID');
         chart.tooltip = buildTooltip('Occurred_Year', 'ObjectID');
       }
       chart.dataset.query.where = where
-      document.getElementById('filter').innerHTML = where;
+      document.getElementById('filter').innerHTML = whereText;
       chart.update()
     }
 

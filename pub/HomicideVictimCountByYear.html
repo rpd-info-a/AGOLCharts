@@ -66,12 +66,12 @@
       var selected = data[chart.dataset.mappings.x.field];
       if (chart.dataset.mappings.x.field == "OccurredYear") {
         var where = chart.dataset.mappings.x.field + " = " + selected;
-        var whereText = chart.dataset.mappings.x.field + " = " + selected;
+        var whereText = "Year = " + selected;
         chart.dataset = buildDataset('WeaponCategory', 'ObjectID');
         chart.tooltip = buildTooltip('WeaponCategory', 'ObjectID');
       } else {
         var where = chart.dataset.mappings.x.field + " = '" + selected + "' and " + 'OccurredYear > 1999';
-        var whereText = chart.dataset.mappings.x.field + " = '" + selected + "'";
+        var whereText = "Weapon Category = " + selected;
         chart.dataset = buildDataset('OccurredYear', 'ObjectID');
         chart.tooltip = buildTooltip('OccurredYear', 'ObjectID');
       }
