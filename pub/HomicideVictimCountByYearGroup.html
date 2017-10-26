@@ -50,7 +50,7 @@
       return [{
         "url": "https://gis.cityofrochester.gov/arcssl/rest/services/RPD/Homicide_pub/FeatureServer/0",
         "query": {
-          "where": "OccurredYear > 1999",
+          "where": "DateOfDeathYear > 1999",
           "groupByFieldsForStatistics": group,
           "outStatistics": [{
             "statisticType": "sum",
@@ -73,25 +73,25 @@
       };
 
     }
-    chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
-    chart.datasets = buildDataset('OccurredYear', 'VictimCount');
-    chart.series = buildSeries('OccurredYear', 'VictimCount');
+    chart.tooltip = buildTooltip('DateOfDeathYear', 'VictimCount');
+    chart.datasets = buildDataset('DateOfDeathYear', 'VictimCount');
+    chart.series = buildSeries('DateOfDeathYear', 'VictimCount');
 
 
     function facetChart(event, data) {
       var selected = data[chart.series[0].category.field];
-      if (chart.series[0].category.field == "OccurredYear") {
+      if (chart.series[0].category.field == "DateOfDeathYear") {
         var where = chart.series[0].category.field + " = " + selected;
         var whereText = "Year = " + selected;
         chart.datasets = buildDataset('WeaponCategory', 'VictimCount');
         chart.tooltip = buildTooltip('WeaponCategory', 'VictimCount');
         chart.series = buildSeries('WeaponCategory', 'VictimCount');
       } else {
-        var where = chart.series[0].category.field + " = '" + selected + "' and " + 'OccurredYear > 1999';
+        var where = chart.series[0].category.field + " = '" + selected + "' and " + 'DateOfDeathYear > 1999';
         var whereText = "Weapon Category = " + selected;
-        chart.datasets = buildDataset('OccurredYear', 'VictimCount');
-        chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
-        chart.series = buildSeries('OccurredYear', 'VictimCount');
+        chart.datasets = buildDataset('DateOfDeathYear', 'VictimCount');
+        chart.tooltip = buildTooltip('DateOfDeathYear', 'VictimCount');
+        chart.series = buildSeries('DateOfDeathYear', 'VictimCount');
       }
       chart.datasets[0].query.where = where;
       document.getElementById('filter').innerHTML = whereText;
@@ -100,9 +100,9 @@
 
     function resetChart() {
       document.getElementById('filter').innerHTML = "no filter";
-      chart.datasets = buildDataset('OccurredYear', 'VictimCount');
-      chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
-      chart.series = buildSeries('OccurredYear', 'VictimCount');
+      chart.datasets = buildDataset('DateOfDeathYear', 'VictimCount');
+      chart.tooltip = buildTooltip('DateOfDeathYear', 'VictimCount');
+      chart.series = buildSeries('DateOfDeathYear', 'VictimCount');
       chart.update()
     }
 
