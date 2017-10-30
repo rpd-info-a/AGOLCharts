@@ -1,96 +1,99 @@
 <html>
-    
-    <head>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
-      <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
-    
-      <!-- Latest compiled and minified CSS -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-        crossorigin="anonymous">
-      <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
-    </head>
-    
-    <body style="padding-top:0px;">
-    
-    
-      <div class="bs-row row ember-view">
-        <div class="col-sm-4">
-          <div class="panel panel-default json-chart-card">
-            <div class="panel-heading">
-              <h4 class="panel-title">Patrol Section Crime Percentages</h4>
-            </div>
-            <div class="panel-body">
-              <div id="chart"></div>
-            </div>
-          </div>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+</head>
+
+<body style="padding-top:0px;">
+
+
+  <div class="bs-row row ember-view">
+    <div class="col-sm-4">
+      <div class="panel panel-default json-chart-card">
+        <div class="panel-heading">
+          <h4 class="panel-title">Patrol Section Crime Percentages</h4>
+        </div>
+        <div class="panel-body">
+          <div id="chart"></div>
         </div>
       </div>
-    
-    
-      <script>
-        var chart = new Cedar({ "type": "pie" });
-        var datasets = [
-          {
-            "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
-            "query": {
-              "where": "Reported_Date_Year >=2016 and Geo_Section is not NULL",
-              "outFields": "Count(OBJECTID), Geo_Section",
-              "groupByFieldsForStatistics": "Geo_Section",
-              "outStatistics": [
-                {
-                  "statisticType": "count",
-                  "onStatisticField": "OBJECTID",
-                  "outStatisticFieldName": "COUNT_OBJECTID"
-                }
-              ]
+    </div>
+  </div>
+
+
+  <script>
+    function toFixed(number, fractionSize) {
+      return +(Math.round(+(number.toString() + 'e' + fractionSize)).toString() + 'e' + -fractionSize);
+    }
+    var chart = new Cedar({ "type": "pie" });
+    var datasets = [
+      {
+        "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
+        "query": {
+          "where": "Reported_Date_Year >=2016 and Geo_Section is not NULL",
+          "outFields": "Count(OBJECTID), Geo_Section",
+          "groupByFieldsForStatistics": "Geo_Section",
+          "outStatistics": [
+            {
+              "statisticType": "count",
+              "onStatisticField": "OBJECTID",
+              "outStatisticFieldName": "COUNT_OBJECTID"
             }
-          }
-        ];
-        var series = [
-          {
-            "category": {
-              "field": "Geo_Section",
-              "label": "Section"
-            },
-            "value": {
-              "field": "COUNT_OBJECTID",
-              "label": "Count"
-            },
-            "radius": 140
-          }
-        ];
-        chart.datasets = datasets;
-        chart.series = series;
-        chart.transform = function (queryResult, dataset) {
-          var features = queryResult.features;
-          var newFeatures = [];
-          var outStatsField = dataset.query.outStatistics[0].outStatisticFieldName;
-          var groupByField = dataset.query.groupByFieldsForStatistics;
-          var sumCrimes = features.reduce(function (a, b) { return a + b.attributes.COUNT_OBJECTID; }, 0);
-          // loop through the sorted query results
-          for (var i = 0, len = features.length; i < len; i++) {
-            if (i < features.length) {
-              // adjust the values so can be formatted as percentage
-              features[i].attributes[outStatsField] = ((features[i].attributes[outStatsField] / sumCrimes).toFixed(4)*100);
-              newFeatures.push(features[i]);
-            }
-          }
-          // return the new features
-          queryResult.features = newFeatures;
-          return queryResult;
-        };
-        chart.tooltip = {
-          // this is the month abbreviation returned from the expresssion above
-          "title": "{Geo_Section}",
-          "content": "{COUNT_OBJECTID}% of crimes"
+          ]
         }
-        chart.show({
-          elementId: "#chart",
-          height: 300,
-          autolabels: false
-        });
-      </script>
-    </body>
-    
-    </html>
+      }
+    ];
+    var series = [
+      {
+        "category": {
+          "field": "Geo_Section",
+          "label": "Section"
+        },
+        "value": {
+          "field": "COUNT_OBJECTID",
+          "label": "Count"
+        },
+        "radius": 140
+      }
+    ];
+    chart.datasets = datasets;
+    chart.series = series;
+    chart.transform = function (queryResult, dataset) {
+      var features = queryResult.features;
+      var newFeatures = [];
+      var outStatsField = dataset.query.outStatistics[0].outStatisticFieldName;
+      var groupByField = dataset.query.groupByFieldsForStatistics;
+      var sumCrimes = features.reduce(function (a, b) { return a + b.attributes.COUNT_OBJECTID; }, 0);
+      // loop through the sorted query results
+      for (var i = 0, len = features.length; i < len; i++) {
+        if (i < features.length) {
+          // adjust the values so can be formatted as percentage
+          var adjValue = toFixed((features[i].attributes[outStatsField] / sumCrimes)*100,1);
+          features[i].attributes[outStatsField] = adjValue;
+          newFeatures.push(features[i]);
+        }
+      }
+      // return the new features
+      queryResult.features = newFeatures;
+      return queryResult;
+    };
+    chart.tooltip = {
+      // this is the month abbreviation returned from the expresssion above
+      "title": "{Geo_Section}",
+      "content": "{COUNT_OBJECTID}% of crimes"
+    }
+    chart.show({
+      elementId: "#chart",
+      height: 300
+    });
+  </script>
+</body>
+
+</html>
