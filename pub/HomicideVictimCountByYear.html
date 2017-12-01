@@ -35,7 +35,7 @@
       return {
         "url": "https://gis.cityofrochester.gov/arcssl/rest/services/RPD/Homicide_pub/FeatureServer/0",
         "query": {
-          "where": "OccurredYear > 1999",
+          "where": "DateOfDeathYear > 1999",
           "groupByFieldsForStatistics": group,
           "outStatistics": [{
             "statisticType": "sum",
@@ -63,22 +63,22 @@
       };
 
     }
-    chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
-    chart.dataset = buildDataset('OccurredYear', 'VictimCount');
+    chart.tooltip = buildTooltip('DateOfDeathYear', 'VictimCount');
+    chart.dataset = buildDataset('DateOfDeathYear', 'VictimCount');
 
 
     function facetChart(event, data) {
       var selected = data[chart.dataset.mappings.x.field];
-      if (chart.dataset.mappings.x.field == "OccurredYear") {
+      if (chart.dataset.mappings.x.field == "DateOfDeathYear") {
         var where = chart.dataset.mappings.x.field + " = " + selected;
         var whereText = "Year = " + selected;
         chart.dataset = buildDataset('WeaponCategory', 'VictimCount');
         chart.tooltip = buildTooltip('WeaponCategory', 'VictimCount');
       } else {
-        var where = chart.dataset.mappings.x.field + " = '" + selected + "' and " + 'OccurredYear > 1999';
+        var where = chart.dataset.mappings.x.field + " = '" + selected + "' and " + 'DateOfDeathYear > 1999';
         var whereText = "Weapon Category = " + selected;
-        chart.dataset = buildDataset('OccurredYear', 'VictimCount');
-        chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
+        chart.dataset = buildDataset('DateOfDeathYear', 'VictimCount');
+        chart.tooltip = buildTooltip('DateOfDeathYear', 'VictimCount');
       }
       chart.dataset.query.where = where;
       document.getElementById('filter').innerHTML = whereText;
@@ -87,8 +87,8 @@
 
     function resetChart() {
       document.getElementById('filter').innerHTML = "no filter";
-      chart.dataset = buildDataset('OccurredYear', 'VictimCount');
-      chart.tooltip = buildTooltip('OccurredYear', 'VictimCount');
+      chart.dataset = buildDataset('DateOfDeathYear', 'VictimCount');
+      chart.tooltip = buildTooltip('DateOfDeathYear', 'VictimCount');
 
       chart.update()
     }
