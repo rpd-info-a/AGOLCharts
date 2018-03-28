@@ -1,0 +1,8 @@
+.holds-the-iframe {
+    background:url(../assets/loader.gif) center center no-repeat;
+    background-size: 128px 128px;
+   }
+.graph-text {
+    height: 220px;
+    overflow-y: auto;
+}
