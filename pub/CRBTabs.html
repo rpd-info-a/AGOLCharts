@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="testPlotly : ">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="//cdn.muicss.com/mui-0.9.7/css/mui.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/tabcrb.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//cdn.muicss.com/mui-0.9.7/js/mui.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script>
+    <title>Rochester</title>
+</head>
+
+<body style="font-family: Avenir Next W01,Avenir Next,Avenir,Helvetica Neue,Helvetica,Arial,sans-serif; color: #4c4c4c">
+
+    <!-- HEADER -->
+
+    <!-- MAIN CONTENT -->
+    <div class="mui-container-fluid" id="container-fluid">
+
+
+        <!--
+  Container is centered on page with 15px of
+  padding on either side. The inner width is
+  fluid for all viewport widths.
+  -->
+        <div id="main_content_wrap" class="outer">
+            <ul class="mui-tabs__bar">
+                <li class="mui--is-active">
+                    <a data-mui-toggle="tab" data-mui-controls="pane-api-1">Collapsible Tree</a>
+                </li>
+                <li>
+                    <a data-mui-toggle="tab" data-mui-controls="pane-api-2">Circle Pack</a>
+                </li>
+
+            </ul>
+            <div class="mui-tabs__pane mui--is-active" id="pane-api-1">
+                <div class="mui-panel" style="box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);padding:0px">
+                        <div>
+                            <iframe data-src="https://rpd-obi1.github.io/CRB/STORYMAPEXAMPLECollapsibleTree.html" width="100%" height="880px"
+                                frameborder="0" class="lozad"></iframe>
+                            <button class="mui-btn mui-btn--primary" onclick="activateNext();" style="margin-left: 10px;">Next</button>
+                        </div>
+                </div>
+            </div>
+            <div class="mui-tabs__pane" id="pane-api-2">
+                <div class="mui-panel" style="padding:0px">
+                        <div>
+                            <iframe data-src="https://rpd-obi1.github.io/CRB/STORYMAPEXAMPLECirclePack.html" width="100%" height="880px"
+                                frameborder="0" class="lozad"></iframe>
+                            <button class="mui-btn mui-btn--primary" onclick="activateNext();" style="margin-left: 10px;">Next</button>
+                        </div>
+                </div>
+            </div>
+            
+            <script>
+                var paneIds = ['pane-api-1', 'pane-api-2'],
+                    currPos = 0;
+
+                function activateNext() {
+                    // increment id
+                    currPos = (currPos + 1) % paneIds.length;
+
+                    // activate tab
+                    mui.tabs.activate(paneIds[currPos]);
+                }
+            </script>
+        </div>
+
+        <script>
+
+            (function () {
+                const observer = lozad('.lozad', {
+                    rootMargin: '50px 0px'
+                }); // lazy loads elements with default selector as '.lozad'
+                observer.observe();
+            })();
+
+        </script>
+</body>
+
+</html>
