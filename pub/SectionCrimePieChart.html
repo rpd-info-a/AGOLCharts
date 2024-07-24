@@ -18,7 +18,7 @@
     <div class="col-sm-4">
       <div class="panel panel-default json-chart-card">
         <div class="panel-heading">
-          <h4 class="panel-title">Patrol Section Crime Percentages</h4>
+          <h4 class="panel-title">Patrol Section Crime Percentages (2024-Pres)</h4>
         </div>
         <div class="panel-body">
           <div id="chart"></div>
@@ -37,7 +37,7 @@
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
-          "where": "Reported_Date_Year >=2016 and Geo_Section is not NULL",
+          "where": "Reported_Date_Year >=2024 and Geo_Section is not NULL",
           "outFields": "Count(OBJECTID), Geo_Section",
           "groupByFieldsForStatistics": "Geo_Section",
           "outStatistics": [
