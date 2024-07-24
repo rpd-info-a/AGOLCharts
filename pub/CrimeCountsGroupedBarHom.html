@@ -42,7 +42,7 @@
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
-          "where": "Statute_Text in ('Murder','Non-Negligent Manslaughter') and Reported_Timestamp >= '1/1/2012' and Statute_Attempted = 'Completed'",
+          "where": "Statute_Text in ('Murder','Non-Negligent Manslaughter') and Reported_Date_Year >= 2012 and Statute_Attempted = 'Completed'",
           "outFields": "Reported_Date_Year",
           "groupByFieldsForStatistics": " Reported_Date_Year",
           "outStatistics": [

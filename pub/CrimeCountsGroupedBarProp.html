@@ -42,7 +42,7 @@
       {
         "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/3",
         "query": {
-          "where": "Statute_Text in ('Burglary','Larceny', 'Motor Vehicle Theft') and Reported_Timestamp >= '1/1/2012'",
+          "where": "Statute_Text in ('Burglary','Larceny', 'Motor Vehicle Theft') and Reported_Date_Year >= 2012",
           "outFields": "Statute_Text, Reported_Date_Year",
           "groupByFieldsForStatistics": "Statute_Text, Reported_Date_Year",
           "outStatistics": [
