@@ -1,0 +1,181 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+</head>
+
+<body style="padding-top:0px;">
+
+
+  <div class="bs-row row ember-view">
+    <div class="col-sm-3">
+      <div class="panel panel-default json-chart-card">
+        <div class="panel-heading">
+          <h4 class="panel-title">Crime (Last 14 Days)</h4>
+        </div>
+        <div class="panel-body">
+          <div id="chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    var chart = new Cedar({ "type": "grouped" });
+    var curdate = new Date();
+    var curyear = curdate.getFullYear();
+    var series = [];
+    var series_values = ['Homicide','Robbery','Burglary','Aggravated Assault','Motor Vehicle Theft','Larceny']
+
+    for (var i = 0, len = series_values.length; i < len; i++) {
+      tmp = series.push(buildSeries(series_values[i]));
+      console.log(tmp)
+    }
+
+
+
+    var datasets = [
+      {
+        "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/0",
+        "query": {
+          "where": "1=1",
+          "outFields": "Statute_Text",
+          "groupByFieldsForStatistics": "Statute_Text",
+          "outStatistics": [
+            {
+              "statisticType": "count",
+              "onStatisticField": "OBJECTID",
+              "outStatisticFieldName": "COUNT_OBJECTID"
+            }
+          ]
+        }
+      }
+    ];
+
+    chart.datasets = datasets;
+    chart.series = series;
+   
+
+    chart.transform = function (queryResult, dataset) {
+      var features = queryResult.features;
+      var newFeatures = [];
+      var outStatsField = dataset.query.outStatistics[0].outStatisticFieldName;
+      var groupByField = dataset.query.groupByFieldsForStatistics;
+
+
+
+      // loop through the sorted query results
+      for (var i = 0, len = features.length; i < len; i++) {
+        if (i < features.length) {
+          statute_text = features[i].attributes.Statute_Text
+          //tmp = series.push(buildSeries(statute_text));
+          //console.log(tmp)
+          features[i].attributes[statute_text] = features[i].attributes[outStatsField]
+          features[i].attributes.Type= "Crime Type"
+          newFeatures.push(features[i]);
+        }
+         console.log(features[i])
+      }
+
+      // return the new features
+      queryResult.features = newFeatures;
+      return queryResult;
+    };
+
+    
+    //
+    function buildTooltip(group, count) {
+      return {
+        "id": "tooltip1",
+        "title": "{Statute_Text}",
+        "content": count 
+      };
+
+    };
+
+    function buildSeries(field) {
+      return {
+        "category": {
+          "field": "Type",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": field,
+          "label": "Crime Type"
+        }
+      };
+    };
+
+    chart.tooltip = {
+      "id": "tooltip1",
+      "title": "{Statute_Text}",
+      "content": "awating data"
+    };
+    chart.on('mouseover', onChartHover);
+
+    function onChartHover(e, d) {
+      //get selected value for attribute in chart marker
+      //var selected = d[dataset.mappings.x.field];
+      if (d) {
+        chart.tooltip = buildTooltip(d.Statute_Text,d.COUNT_OBJECTID);
+      }
+
+    };
+    chart.override = {
+      "legends": [
+        {
+          "fill": "color",
+          "title": "",
+          "properties": {
+            "symbols": {
+              "size": {
+                "value": 200
+              },
+              "shape": {
+                "value": "M-0.4,-0.4L0.4,-0.4 0.4,0.4 -0.4,0.4Z"
+              }
+            },
+            "labels": {
+              "fontSize": {
+                "value": 12
+              },
+              "text": {
+                "template": "{{datum.data|mid:11,30}}"
+              }
+            }
+          }
+        }
+      ],
+      "axes": [
+        {
+          "properties": {
+            "labels": {
+              "angle": { "value": 0 },
+              "fontSize": {"value": 14},
+              "align": {"value": "center"},
+              "baseline": {"value": "top"}
+            }
+          }
+        }
+      ]
+    };
+
+    
+    chart.show({
+      elementId: "#chart",
+      height: 300,
+      autolabels: false,
+      legend: false
+    });
+  </script>
+</body>
+
+</html>

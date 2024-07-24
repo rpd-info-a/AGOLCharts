@@ -1,0 +1,160 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.1/vega.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/arcgis-cedar/dist/cedar.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://d1iq7pbacwn5rb.cloudfront.net/opendata-ui/assets/assets/opendata-55e4a2ed245f472cbd1d4675248017ec.css">
+</head>
+
+<body style="padding-top:0px;">
+
+
+  <div class="bs-row row ember-view">
+    <div class="col-sm-3">
+      <div class="panel panel-default json-chart1-card">
+        <div class="panel-heading">
+          <h4 class="panel-title">Crime (Last 14 Days)</h4>
+        </div>
+          <div class="panel-body"><div id="chart1"></div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    var chart1 = new Cedar({ "type": "bar" });
+    var curdate = new Date();
+    var curyear = curdate.getFullYear();
+    var series = [];
+    
+    var series = [{
+    "category": {"field": "Statute_Text", "label": ""},
+    "value": {"field": "COUNT_OBJECTID", "label": ""},
+    "source": "crime_query"
+    }];
+    //for (var i = 2012; i <= curyear; i++) {
+    //  series.push(buildSeries(i));
+    //};
+
+    var datasets = [
+      {
+        "url": "https://maps.cityofrochester.gov/arcgis/rest/services/RPD/RPD_Part_I_Crime/FeatureServer/0",
+        "name": "crime_query",
+        "query": {
+          "where": "1=1",
+          "outFields": "Statute_Text",
+          "groupByFieldsForStatistics": "Statute_Text",
+          "orderByFields":"COUNT_OBJECTID",
+          "outStatistics": [
+            {
+              "statisticType": "count",
+              "onStatisticField": "OBJECTID",
+              "outStatisticFieldName": "COUNT_OBJECTID"
+            }
+          ]
+        }
+      }
+    ];
+
+    chart1.datasets = datasets;
+    chart1.series = series;
+
+    chart1.transform = function (queryResult, dataset) {
+      var features = queryResult.features;
+      var newFeatures = [];
+      var outStatsField = dataset.query.outStatistics[0].outStatisticFieldName;
+      var groupByField = dataset.query.groupByFieldsForStatistics;
+
+      console.log("groupbyfield: " + groupByField)
+
+      // loop through the sorted query results
+      for (var i = 0, len = features.length; i < len; i++) {
+        if (i < features.length) {
+          crime = features[i].attributes.Statute_Text
+          features[i].attributes[crime] = features[i].attributes[outStatsField]
+
+          newFeatures.push(features[i]);
+        }
+         console.log(features[i])
+      }
+
+      // return the new features
+      queryResult.features = newFeatures;
+      return queryResult;
+    };
+
+    //
+    function buildTooltip(group, count) {
+      return {
+        "id": "tooltip1",
+        "title": count,
+        "content": "{Statute_Text}"
+      };
+
+    };
+
+    function buildSeries(field) {
+      return {
+        "category": {
+          "field": "Statute_Text",
+          "label": "Statute_Text"
+        },
+        "value": {
+          "field": field,
+          "label": "Count"
+        }
+      };
+    };
+
+    chart1.tooltip = {
+      "id": "tooltip1",
+      "title": "{Statute_Text}",
+      "content": "awating data"
+    };
+    chart1.on('mouseover', onchart1Hover);
+
+    chart1.override = {
+      "axes": [
+        {
+          "properties": {
+            "labels": {
+              "angle": { "value": -45 },
+              "fontSize": { "value": 14 },
+             // "align": { "value": "bottom" },
+             // "baseline": { "value": "top" }
+            }
+          }
+        }
+      ]
+    };
+
+    function onchart1Hover(e, d) {
+      //get selected value for attribute in chart1 marker
+      //var selected = d[dataset.mappings.x.field];
+      if (d) {
+        chart1.tooltip = buildTooltip(d.Statute_Text, d.COUNT_OBJECTID);
+      }
+
+    };
+
+    chart1.show({
+      elementId: "#chart1",
+      height: 300,
+      autolabels: false,
+      legend: false
+    });
+
+
+
+
+  </script>
+</body>
+
+</html>
